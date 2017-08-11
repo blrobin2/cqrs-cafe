@@ -1,0 +1,15 @@
+{
+  "name": "cqrs-cafe",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Bennie <brobinson88@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "ts-loader": "^2.3.2",
+    "typescript": "^2.4.2",
+    "webpack": "^3.5.3"
+  },
+  "scripts": {
+    "watch": "webpack --watch"
+  }
+}
