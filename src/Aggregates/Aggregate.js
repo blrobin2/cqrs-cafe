@@ -7,11 +7,11 @@ export default class Aggregate
   }
 
   applyOneEvent(event) {
-    if (typeof this[`handle${event.constructor.name}`] === 'undefined') {
+    if (typeof this[`apply${event.constructor.name}`] === 'undefined') {
       throw new Error(`Aggregate ${this.constructor.name} does not know how to apply ${event.constructor.name}`)
     }
 
-    this[`handle${event.constructor.name}`]()
+    this[`apply${event.constructor.name}`]()
     this.eventsLoaded++
   }
 }

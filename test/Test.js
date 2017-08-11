@@ -17,7 +17,7 @@ export default class Test {
   when(command) {
     return agg => {
       try {
-        return [this.dispatchCommand(command)]
+        return this.dispatchCommand(command)
       } catch (e) {
         return e
       }
@@ -26,7 +26,7 @@ export default class Test {
 
   then(expectedEvents) {
     return gotEvents => {
-      if (typeof gotEvents !== 'undefined') {
+      if (Array.isArray(gotEvents)) {
         if (gotEvents.length === expectedEvents.length) {
           for (let i = 0; i < gotEvents.length; i++) {
             const expectedEvent = expectedEvents[i].constructor.name
@@ -37,18 +37,18 @@ export default class Test {
                 this.serialize(gotEvents[i])
               )
             } else {
-              assert.fail(`Incorrect event in result: expected a ${expectedEvent} but got a ${gotEvent}`)
+              assert.fail(null, null, `Incorrect event in result: expected a ${expectedEvent} but got a ${gotEvent}`)
             }
           }
         } else if (gotEvents.length < expectedEvents.length) {
-          assert.fail(`Expected events missing: ${this.eventDiff(expectedEvents, gotEvents)}`) 
+          assert.fail(null, null, `Expected events missing: ${this.eventDiff(expectedEvents, gotEvents)}`) 
         } else {
           assert.fail(`Unexpected event(s) emitted: ${this.eventDiff(gotEvents, expectedEvents)}`)
         }
-      } else if (got instanceof CommandHandlerNotDefinedError) {
-        assert.fail(got.message)
+      } else if (gotEvents instanceof CommandHandlerNotDefinedError) {
+        assert.fail(null, null, gotEvents.message)
       } else {
-        assert.fail(`Expected events, but got exception ${got.constructor.name}`)
+        assert.fail(null, null, `Expected events, but got exception ${gotEvents.constructor.name}`)
       }
     }
   }

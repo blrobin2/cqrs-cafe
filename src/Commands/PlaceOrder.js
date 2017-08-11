@@ -1,6 +1,6 @@
 export default class PlaceOrder {
   constructor({id, orderedItems}) {
-    this.id
+    this.id = id
     this.orderedItems = orderedItems
   }
 }
