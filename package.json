@@ -5,11 +5,16 @@
   "author": "Bennie <brobinson88@gmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "ts-loader": "^2.3.2",
-    "typescript": "^2.4.2",
+    "babel-core": "^6.25.0",
+    "babel-loader": "^7.1.1",
+    "babel-polyfill": "^6.23.0",
+    "babel-preset-env": "^1.6.0",
+    "chai": "^4.1.1",
+    "mocha": "^3.5.0",
     "webpack": "^3.5.3"
   },
   "scripts": {
-    "watch": "webpack --watch"
+    "watch": "webpack --watch",
+    "test": "mocha --compilers js:babel-core/register"
   }
 }

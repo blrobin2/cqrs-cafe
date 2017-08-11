@@ -1,18 +1,20 @@
 module.exports = {
-  entry: './src/index.ts',
+  entry: './src/index.js',
   output: {
     path: __dirname + '/build',
     filename: 'bundle.js'
   },
-  resolve: {
-    // Add .ts .tsx as a resolvable extension.
-    extensions: ['.ts', '.tsx', '.js']
-  },
   module: {
-    loaders: [
+    rules: [
       {
-        test: /\.tsx?$/,
-        loader: 'ts-loader'
+        test: /\.js$/,
+        exclude: /(node_modules|bower_components)/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['env']
+          }
+        }
       }
     ]
   }
