@@ -1,11 +1,9 @@
-export default class ExtendableError extends Error {
-  constructor(message) {
-    super(message);
-    this.name = this.constructor.name;
-    if (typeof Error.captureStackTrace === 'function') {
-      Error.captureStackTrace(this, this.constructor);
-    } else { 
-      this.stack = (new Error(message)).stack; 
-    }
-  }
+function ExtendableError(message) {
+  this.name = this.constructor.name
+  this.message = message || `Error: ${this.name}`
+  this.stack = (new Error()).stack
 }
+ExtendableError.prototype = Object.create(Error.prototype)
+ExtendableError.prototype.constructor = ExtendableError
+
+export default ExtendableError

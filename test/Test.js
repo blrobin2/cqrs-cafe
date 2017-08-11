@@ -59,6 +59,12 @@ export default class Test {
     return a_diff.filter(e => b_diff.includes(e))
   }
 
+  thenFailWith(exception) {
+    return got => {
+      assert.instanceOf(got, exception)
+    }
+  }
+
   dispatchCommand(command) {
     const commandName = command.constructor.name
     if (typeof this.sut[`handle${commandName}`] === 'undefined') {
