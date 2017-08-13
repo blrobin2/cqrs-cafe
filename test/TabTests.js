@@ -1,5 +1,5 @@
-import Test from './Test'
-import GUID from '../src/Util/GUID'
+import Test from '../lib/Test'
+import GUID from '../lib/GUID'
 import OpenTab from '../src/Commands/OpenTab'
 import PlaceOrder from '../src/Commands/PlaceOrder'
 import MarkDrinksServed from '../src/Commands/MarkDrinksServed'
@@ -18,12 +18,14 @@ import TabClosed from '../src/Events/TabClosed'
 import OrderedItem from '../src/Domain/OrderedItem'
 import TabAggregate from '../src/Aggregates/TabAggregate'
 
-import TabNotOpen from '../src/Exceptions/TabNotOpen'
-import DrinksNotOutstanding from '../src/Exceptions/DrinksNotOutstanding'
-import FoodNotOutstanding from '../src/Exceptions/FoodNotOutstanding'
-import FoodNotPrepared from '../src/Exceptions/FoodNotPrepared'
-import MustPayEnough from '../src/Exceptions/MustPayEnough'
-import TabHasUnservedItems from '../src/Exceptions/TabHasUnservedItems'
+import {
+  TabNotOpen,
+  DrinksNotOutstanding,
+  FoodNotOutstanding,
+  FoodNotPrepared,
+  MustPayEnough,
+  TabHasUnservedItems
+} from '../src/Exceptions'
 
 class TabTest extends Test {
   constructor() {

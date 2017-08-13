@@ -1,4 +1,4 @@
-import Aggregate from './Aggregate'
+import Aggregate from '../../lib/Aggregate'
 import OpenTab from '../Commands/OpenTab'
 import TabOpened from '../Events/TabOpened'
 import DrinksOrdered from '../Events/DrinksOrdered'
@@ -7,12 +7,14 @@ import DrinksServed from '../Events/DrinksServed'
 import FoodPrepared from '../Events/FoodPrepared'
 import FoodServed from '../Events/FoodServed'
 import TabClosed from '../Events/TabClosed'
-import TabNotOpen from '../Exceptions/TabNotOpen'
-import DrinksNotOutstanding from '../Exceptions/DrinksNotOutstanding'
-import FoodNotOutstanding from '../Exceptions/FoodNotOutstanding'
-import FoodNotPrepared from '../Exceptions/FoodNotPrepared'
-import MustPayEnough from '../Exceptions/MustPayEnough'
-import TabHasUnservedItems from '../Exceptions/TabHasUnservedItems'
+import {
+  TabNotOpen,
+  DrinksNotOutstanding,
+  FoodNotOutstanding,
+  FoodNotPrepared,
+  MustPayEnough,
+  TabHasUnservedItems
+} from '../Exceptions'
 
 /**
  * Representation of a Tab for an Order
