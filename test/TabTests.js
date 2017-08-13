@@ -3,17 +3,20 @@ import GUID from '../src/Util/GUID'
 import OpenTab from '../src/Commands/OpenTab'
 import PlaceOrder from '../src/Commands/PlaceOrder'
 import MarkDrinksServed from '../src/Commands/MarkDrinksServed'
+import MarkFoodServed from '../src/Commands/MarkFoodServed'
 
 import TabOpened from '../src/Events/TabOpened'
 import DrinksOrdered from '../src/Events/DrinksOrdered'
 import FoodOrdered from '../src/Events/FoodOrdered'
 import DrinksServed from '../src/Events/DrinksServed'
+import FoodServed from '../src/Events/FoodServed'
 
 import OrderedItem from '../src/Domain/OrderedItem'
 import TabAggregate from '../src/Aggregates/TabAggregate'
 
 import TabNotOpen from '../src/Exceptions/TabNotOpen'
 import DrinksNotOutstanding from '../src/Exceptions/DrinksNotOutstanding'
+import FoodNotOutstanding from '../src/Exceptions/FoodNotOutstanding'
 
 class TabTest extends Test {
   constructor() {
@@ -218,6 +221,78 @@ class TabTest extends Test {
       ])
     )
   }
+
+  canNotServeUnorderedFood() {
+    this.test(
+      this.given([
+        new TabOpened({
+          id: this.testId,
+          tableNumber: this.testTable,
+          waiter: this.testWaiter
+        }),
+        new FoodOrdered({
+          id: this.testId,
+          orderedItems: [this.testFood1 ]
+        })
+      ]),
+      this.when(new MarkFoodServed({
+        id: this.testId,
+        menuNumbers: [ this.testFood2.menuNumber ]
+      })),
+      this.thenFailWith(FoodNotOutstanding)
+    )
+  }
+
+  canNotServeOrderedFoodTwice() {
+    this.test(
+      this.given([
+        new TabOpened({
+          id: this.testId,
+          tableNumber: this.testTable,
+          waiter: this.testWaiter
+        }),
+        new FoodOrdered({
+          id: this.testId,
+          orderedItems: [this.testFood1 ]
+        }),
+        new FoodServed({
+          id: this.testId,
+          menuNumbers: [ this.testFood1.menuNumber ]
+        })
+      ]),
+      this.when(new MarkFoodServed({
+        id: this.testId,
+        menuNumbers: [ this.testFood1.menuNumber ]
+      })),
+      this.thenFailWith(FoodNotOutstanding)
+    )
+  }
+
+  orderedFoodCanBeServed() {
+    this.test(
+      this.given([
+        new TabOpened({
+          id: this.testId,
+          tableNumber: this.testTable,
+          waiter: this.testWaiter
+        }),
+        new FoodOrdered({
+          id: this.testId,
+          orderedItems: [this.testFood1, this.testFood2]
+        })
+      ]),
+      this.when(new MarkFoodServed({
+        id: this.testId,
+        menuNumbers: [ this.testFood1.menuNumber, this.testFood2.menuNumber ]
+      })),
+      this.then([
+        new FoodServed({
+          id: this.testId,
+          menuNumbers: [ this.testFood1.menuNumber, this.testFood2.menuNumber ]
+        })
+      ])
+    )
+  }
 }
 
 describe('Tab', () => {
@@ -250,5 +325,14 @@ describe('Tab', () => {
   })
   it('can serve ordered drinks', () => {
     tabTest.orderedDrinksCanBeServed()
+  })
+  it('cannot serve unordered food', () => {
+    tabTest.canNotServeUnorderedFood()
+  })
+  it('cannot serve ordered food twice', () => {
+    tabTest.canNotServeOrderedFoodTwice()
+  })
+  it('can serve ordered food', () => {
+    tabTest.orderedFoodCanBeServed()
   })
 })
