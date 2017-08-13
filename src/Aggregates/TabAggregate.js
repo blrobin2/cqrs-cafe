@@ -4,11 +4,15 @@ import TabOpened from '../Events/TabOpened'
 import DrinksOrdered from '../Events/DrinksOrdered'
 import FoodOrdered from '../Events/FoodOrdered'
 import DrinksServed from '../Events/DrinksServed'
+import FoodPrepared from '../Events/FoodPrepared'
 import FoodServed from '../Events/FoodServed'
 import TabClosed from '../Events/TabClosed'
 import TabNotOpen from '../Exceptions/TabNotOpen'
 import DrinksNotOutstanding from '../Exceptions/DrinksNotOutstanding'
 import FoodNotOutstanding from '../Exceptions/FoodNotOutstanding'
+import FoodNotPrepared from '../Exceptions/FoodNotPrepared'
+import MustPayEnough from '../Exceptions/MustPayEnough'
+import TabHasUnservedItems from '../Exceptions/TabHasUnservedItems'
 
 /**
  * Representation of a Tab for an Order
@@ -24,6 +28,7 @@ export default class TabAggregate extends Aggregate {
     this.open = false
     this.outstandingDrinks = []
     this.outstandingFood = []
+    this.preparedFood = []
     this.servedItemsValue = 0
   }
 
@@ -93,16 +98,19 @@ export default class TabAggregate extends Aggregate {
     })]
   }
 
-  /**
-   * Handle MarkFoodServed comand
-   * 
-   * @param {MarkFoodServed} command
-   * @return {Array[FoodServed]}
-   * @throws {FoodNotOutstanding}
-   */
-  handleMarkFoodServed(command) {
+  handleMarkFoodPrepared(command) {
     if (!this._isFoodOutstanding(command.menuNumbers)) {
       throw new FoodNotOutstanding()
+    }
+    return [new FoodPrepared({
+      id: command.id,
+      menuNumbers: command.menuNumbers
+    })]
+  }
+
+  handleMarkFoodServed(command) {
+    if (!this._isFoodPrepared(command.menuNumbers)) {
+      throw new FoodNotPrepared()
     }
     return [new FoodServed({
       id: command.id,
@@ -117,6 +125,18 @@ export default class TabAggregate extends Aggregate {
    * @return {Array[TabClosed]} 
    */
   handleCloseTab(command) {
+    if (!this.open) {
+      throw new TabNotOpen()
+    }
+    if (command.amountPaid < this.servedItemsValue) {
+      throw new MustPayEnough()
+    }
+    if (this.outstandingDrinks.length > 0
+      || this.outstandingFood.length > 0
+      || this.preparedFood.length > 0
+    ) {
+      throw new TabHasUnservedItems()
+    }
     return [new TabClosed({
       id: command.id,
       amountPaid: command.amountPaid,
@@ -152,6 +172,16 @@ export default class TabAggregate extends Aggregate {
     this.outstandingFood.push(...event.orderedItems)
   }
 
+  applyFoodPrepared(event) {
+    event.menuNumbers.forEach(num => {
+      const itemIndex = this.outstandingFood.findIndex(d => d.menuNumber === num)
+      if (itemIndex > -1) {
+        const food = this.outstandingFood.splice(itemIndex, 1)
+        this.preparedFood.push(...food)
+      }
+    })
+  }
+
   /**
    * Applies DrinkServed event
    * 
@@ -176,13 +206,17 @@ export default class TabAggregate extends Aggregate {
    */
   applyFoodServed(event) {
     event.menuNumbers.forEach(num => {
-      const itemIndex = this.outstandingFood.findIndex(d =>
+      const itemIndex = this.preparedFood.findIndex(d =>
         d.menuNumber === num)
       if (itemIndex > -1) {
-        this.servedItemsValue += this.outstandingFood[itemIndex].price
-        this.outstandingFood.splice(itemIndex, 1)
+        this.servedItemsValue += this.preparedFood[itemIndex].price
+        this.preparedFood.splice(itemIndex, 1)
       }
     })
+  }
+
+  applyTabClosed(event) {
+    this.open = false
   }
 
   /**
@@ -204,6 +238,11 @@ export default class TabAggregate extends Aggregate {
    */
   _isFoodOutstanding(menuNumbers) {
     return this.outstandingFood.filter(item =>
+      menuNumbers.includes(item.menuNumber)).length > 0
+  }
+
+  _isFoodPrepared(menuNumbers) {
+    return this.preparedFood.filter(item =>
       menuNumbers.includes(item.menuNumber)).length > 0
   }
 }
