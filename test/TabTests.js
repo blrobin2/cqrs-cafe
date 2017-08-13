@@ -296,6 +296,38 @@ class TabTest extends Test {
     )
   }
 
+  canCloseTab() {
+    this.test(
+      this.given([
+        new TabOpened({
+          id: this.testId,
+          tableNumber: this.testTable,
+          waiter: this.testWaiter
+        }),
+        new DrinksOrdered({
+          id: this.testId,
+          orderedItems: [this.testDrink1 ]
+        }),
+        new DrinksServed({
+          id: this.testId,
+          menuNumbers: [ this.testDrink1.menuNumber ]
+        })        
+      ]),
+      this.when(new CloseTab({
+        id: this.testId,
+        amountPaid: this.testDrink1.price
+      })),
+      this.then([
+        new TabClosed({
+          id: this.testId,
+          amountPaid: this.testDrink1.price,
+          orderValue: this.testDrink1.price,
+          tipValue: 0
+        })
+      ])
+    )
+  }
+
   canCloseTabWithTip() {
     this.test(
       this.given([
@@ -369,7 +401,10 @@ describe('Tab', () => {
   it('can serve ordered food', () => {
     tabTest.orderedFoodCanBeServed()
   })
-  it('can close tba with tip', () => {
+  it('can close a tab', () => {
+    tabTest.canCloseTab()
+  })
+  it('can close a tab with tip', () => {
     tabTest.canCloseTabWithTip()
   })
 })
