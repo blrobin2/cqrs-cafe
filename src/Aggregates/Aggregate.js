@@ -11,7 +11,7 @@ export default class Aggregate
       throw new Error(`Aggregate ${this.constructor.name} does not know how to apply ${event.constructor.name}`)
     }
 
-    this[`apply${event.constructor.name}`]()
+    this[`apply${event.constructor.name}`](event)
     this.eventsLoaded++
   }
 }
