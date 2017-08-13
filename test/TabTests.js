@@ -4,12 +4,14 @@ import OpenTab from '../src/Commands/OpenTab'
 import PlaceOrder from '../src/Commands/PlaceOrder'
 import MarkDrinksServed from '../src/Commands/MarkDrinksServed'
 import MarkFoodServed from '../src/Commands/MarkFoodServed'
+import CloseTab from '../src/Commands/CloseTab'
 
 import TabOpened from '../src/Events/TabOpened'
 import DrinksOrdered from '../src/Events/DrinksOrdered'
 import FoodOrdered from '../src/Events/FoodOrdered'
 import DrinksServed from '../src/Events/DrinksServed'
 import FoodServed from '../src/Events/FoodServed'
+import TabClosed from '../src/Events/TabClosed'
 
 import OrderedItem from '../src/Domain/OrderedItem'
 import TabAggregate from '../src/Aggregates/TabAggregate'
@@ -293,6 +295,38 @@ class TabTest extends Test {
       ])
     )
   }
+
+  canCloseTabWithTip() {
+    this.test(
+      this.given([
+        new TabOpened({
+          id: this.testId,
+          tableNumber: this.testTable,
+          waiter: this.testWaiter
+        }),
+        new DrinksOrdered({
+          id: this.testId,
+          orderedItems: [this.testDrink2 ]
+        }),
+        new DrinksServed({
+          id: this.testId,
+          menuNumbers: [ this.testDrink2.menuNumber ]
+        })
+      ]),
+      this.when(new CloseTab({
+        id: this.testId,
+        amountPaid: this.testDrink2.price + 0.5
+      })),
+      this.then([
+        new TabClosed({
+          id: this.testId,
+          amountPaid: this.testDrink2.price + 0.5,
+          orderValue: this.testDrink2.price,
+          tipValue: 0.5
+        })
+      ])
+    )
+  }
 }
 
 describe('Tab', () => {
@@ -334,5 +368,8 @@ describe('Tab', () => {
   })
   it('can serve ordered food', () => {
     tabTest.orderedFoodCanBeServed()
+  })
+  it('can close tba with tip', () => {
+    tabTest.canCloseTabWithTip()
   })
 })

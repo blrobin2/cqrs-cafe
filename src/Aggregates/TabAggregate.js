@@ -5,20 +5,35 @@ import DrinksOrdered from '../Events/DrinksOrdered'
 import FoodOrdered from '../Events/FoodOrdered'
 import DrinksServed from '../Events/DrinksServed'
 import FoodServed from '../Events/FoodServed'
+import TabClosed from '../Events/TabClosed'
 import TabNotOpen from '../Exceptions/TabNotOpen'
 import DrinksNotOutstanding from '../Exceptions/DrinksNotOutstanding'
 import FoodNotOutstanding from '../Exceptions/FoodNotOutstanding'
 
-export default class TabAggregate extends Aggregate
-{
+/**
+ * Representation of a Tab for an Order
+ * 
+ * @extends Aggregate
+ */
+export default class TabAggregate extends Aggregate {
+  /**
+   * Constructs a new TabAggregate
+   */
   constructor() {
     super()
     this.open = false
     this.outstandingDrinks = []
     this.outstandingFood = []
+    this.servedItemsValue = 0
   }
 
-  // CommandHandlers
+  /**
+   * Handles OpenTab command
+   * 
+   * @param {OpenTab} command - The OpenTab command
+   * @return {Array[TabOpened]} The events fired
+   * @throws {Error}
+   */
   handleOpenTab(command) {
     if (!command instanceof OpenTab) {
       throw new Error(`Invalid command: Expected OpenTab, recieved ${command.constructor.name}`)
@@ -30,6 +45,13 @@ export default class TabAggregate extends Aggregate
     })]
   }
 
+  /**
+   * Handles PlaceOrder command
+   * 
+   * @param {PlaceOrder} command
+   * @return {Array[DrinksOrdered|FoodOrdered]}
+   * @throws {TabNotOpen} - When tab isn't open
+   */
   handlePlaceOrder(command) {
     if (!this.open) {
       throw new TabNotOpen()
@@ -54,6 +76,13 @@ export default class TabAggregate extends Aggregate
     return events
   }
 
+  /**
+   * Handles MarkDrinksServed command
+   * 
+   * @param {MarkDrinksServed} command
+   * @return {Array[DrinksServed]}
+   * @throws {DrinksNotOutstanding}
+   */
   handleMarkDrinksServed(command) {
     if (!this._areDrinksOutstanding(command.menuNumbers)) {
       throw new DrinksNotOutstanding()
@@ -64,6 +93,13 @@ export default class TabAggregate extends Aggregate
     })]
   }
 
+  /**
+   * Handle MarkFoodServed comand
+   * 
+   * @param {MarkFoodServed} command
+   * @return {Array[FoodServed]}
+   * @throws {FoodNotOutstanding}
+   */
   handleMarkFoodServed(command) {
     if (!this._isFoodOutstanding(command.menuNumbers)) {
       throw new FoodNotOutstanding()
@@ -74,43 +110,100 @@ export default class TabAggregate extends Aggregate
     })]
   }
 
-  // Event Appliers
+  /**
+   * Handles CloseTab command
+   * 
+   * @param {CloseTab} command
+   * @return {Array[TabClosed]} 
+   */
+  handleCloseTab(command) {
+    return [new TabClosed({
+      id: command.id,
+      amountPaid: command.amountPaid,
+      orderValue: this.servedItemsValue,
+      tipValue: command.amountPaid - this.servedItemsValue
+    })]
+  }
+
+  /**
+   * Applies TabOpened event
+   * 
+   * @param {TabOpened} event
+   */
   applyTabOpened(event) {
     this.open = true
   }
 
+  /**
+   * Applies DrinksOrdered event
+   * 
+   * @param {DrinksOrdered} event 
+   */
   applyDrinksOrdered(event) {
-    this.outstandingDrinks.push(...event.orderedItems.map(i => i.menuNumber))
+    this.outstandingDrinks.push(...event.orderedItems)
   }
 
+  /**
+   * Applies FoodOrdered event
+   * 
+   * @param {FoodOrdered} event 
+   */
   applyFoodOrdered(event) {
-    this.outstandingFood.push(...event.orderedItems.map(i => i.menuNumber))
+    this.outstandingFood.push(...event.orderedItems)
   }
 
+  /**
+   * Applies DrinkServed event
+   * 
+   * @param {DrinksServed} event 
+   */
   applyDrinksServed(event) {
     event.menuNumbers.forEach(num => {
-      if (this.outstandingDrinks.includes(num)) {
-        const index = this.outstandingDrinks.indexOf(num)
-        this.outstandingDrinks.splice(index, 1)
+      const itemIndex = this.outstandingDrinks.findIndex(d =>
+        d.menuNumber === num)
+      if (itemIndex > -1) {
+        this.servedItemsValue += this.outstandingDrinks[itemIndex].price
+        this.outstandingDrinks.splice(itemIndex, 1)
+        
       }
     })
   }
 
+  /**
+   * Applies FoodServed event
+   * 
+   * @param {FoodServed} event 
+   */
   applyFoodServed(event) {
     event.menuNumbers.forEach(num => {
-      if (this.outstandingFood.includes(num)) {
-        const index = this.outstandingFood.indexOf(num)
-        this.outstandingFood.splice(index, 1)
+      const itemIndex = this.outstandingFood.findIndex(d =>
+        d.menuNumber === num)
+      if (itemIndex > -1) {
+        this.servedItemsValue += this.outstandingFood[itemIndex].price
+        this.outstandingFood.splice(itemIndex, 1)
       }
     })
   }
 
-  // Helpers
+  /**
+   * Checks if there are any outstanding drinks
+   * 
+   * @param {Array[number]} menuNumbers
+   * @return {Boolean}
+   */
   _areDrinksOutstanding(menuNumbers) {
-    return this.outstandingDrinks.filter(num => menuNumbers.includes(num)).length > 0
+    return this.outstandingDrinks.filter(item =>
+      menuNumbers.includes(item.menuNumber)).length > 0
   }
 
+  /**
+   * Checks if there is any outstanding food
+   * 
+   * @param {Array[number]} menuNumbers
+   * @return {Boolean}
+   */
   _isFoodOutstanding(menuNumbers) {
-    return this.outstandingFood.filter(num => menuNumbers.includes(num)).length > 0
+    return this.outstandingFood.filter(item =>
+      menuNumbers.includes(item.menuNumber)).length > 0
   }
 }
