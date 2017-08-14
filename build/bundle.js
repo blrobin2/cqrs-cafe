@@ -217,7 +217,6 @@ var MessageDispatcher = function () {
   }, {
     key: 'addSubscriberFor',
     value: function addSubscriberFor(event, subscriber) {
-      console.log(event);
       if (!this.eventSubscribers.has(event)) {
         this.eventSubscribers.set(event, []);
       }
