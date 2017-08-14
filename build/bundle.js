@@ -148,8 +148,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -174,21 +172,22 @@ var MessageDispatcher = function () {
     }
   }, {
     key: '_publishEvent',
-    value: function _publishEvent(_ref) {
-      var _ref2 = _slicedToArray(_ref, 1),
-          event = _ref2[0];
+    value: function _publishEvent(events) {
+      var _this = this;
 
-      var eventName = event.constructor.name;
-      if (this.eventSubscribers.has(eventName)) {
-        this.eventSubscribers.get(eventName).forEach(function (sub) {
-          return sub(event);
-        });
-      }
+      events.forEach(function (event) {
+        var eventName = event.constructor.name;
+        if (_this.eventSubscribers.has(eventName)) {
+          _this.eventSubscribers.get(eventName).forEach(function (sub) {
+            return sub(event);
+          });
+        }
+      });
     }
   }, {
     key: 'addHandlerFor',
     value: function addHandlerFor(command, aggregate) {
-      var _this = this;
+      var _this2 = this;
 
       if (this.commandHandlers.has(command)) {
         throw new Error('Command handler already registered for ' + command);
@@ -197,7 +196,7 @@ var MessageDispatcher = function () {
       this.commandHandlers.set(command, function (c) {
         var agg = new aggregate();
         agg.id = c.id;
-        agg.applyEvents(_this.eventStore.loadEventsFor(agg.id));
+        agg.applyEvents(_this2.eventStore.loadEventsFor(agg.id));
 
         var resultEvents = Object.getOwnPropertyNames(aggregate.prototype).filter(function (method) {
           return method === 'handle' + command;
@@ -206,11 +205,11 @@ var MessageDispatcher = function () {
         });
 
         if (resultEvents.length > 0) {
-          _this.eventStore.saveEventsFor(agg.id, agg.eventsLoaded, resultEvents);
+          _this2.eventStore.saveEventsFor(agg.id, agg.eventsLoaded, resultEvents);
         }
 
         resultEvents.forEach(function (event) {
-          return _this._publishEvent(event);
+          return _this2._publishEvent(event);
         });
       });
     }
@@ -227,7 +226,7 @@ var MessageDispatcher = function () {
   }, {
     key: 'scanInstance',
     value: function scanInstance(instance) {
-      var _this2 = this;
+      var _this3 = this;
 
       var instanceMethods = this._isConstructor(instance) ? Object.getOwnPropertyNames(instance.prototype) : Object.getOwnPropertyNames(instance.constructor.prototype);
       var handlers = instanceMethods.filter(function (method) {
@@ -236,12 +235,12 @@ var MessageDispatcher = function () {
       handlers.map(function (handler) {
         return handler.replace('handle', '');
       }).forEach(function (handler) {
-        return _this2.addHandlerFor(handler, instance);
+        return _this3.addHandlerFor(handler, instance);
       });
 
       var subscribers = instance.iSubscribeTo || [];
       subscribers.forEach(function (sub) {
-        return _this2.addSubscriberFor(sub, instance);
+        return _this3.addSubscriberFor(sub, instance);
       });
     }
   }, {
