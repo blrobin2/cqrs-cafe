@@ -91,7 +91,7 @@ export default class OpenTabs {
     })
   }
 
-  handleTabOpened(event) {
+  applyTabOpened(event) {
     this.todoByTab.set(event.id, new Tab({
       id: event.id,
       tableNumber: event.tableNumber,
@@ -99,7 +99,7 @@ export default class OpenTabs {
     }))
   }
 
-  handleDrinksOrdered(event) {
+  applyDrinksOrdered(event) {
     this._addItems(event.id,
       event.items.map(drink => new TabItem({
         menuNumber: drink.menuNumber,
@@ -109,7 +109,7 @@ export default class OpenTabs {
       tab => tab.inPreparation)
   }
 
-  handleFoodPrepared(event) {
+  applyFoodPrepared(event) {
     this._moveItems(
       event.id,
       event.menuNumbers,
@@ -117,7 +117,7 @@ export default class OpenTabs {
       tab => tab.toServe)
   }
 
-  handleDrinksServed(event) {
+  applyDrinksServed(event) {
     this._moveItems(
       event.id,
       event.menuNumbers,
@@ -126,7 +126,7 @@ export default class OpenTabs {
     )
   }
 
-  handleFoodServed(event) {
+  applyFoodServed(event) {
     this._moveItems(
       event.id,
       event.menuNumbers,
@@ -135,7 +135,7 @@ export default class OpenTabs {
     )
   }
 
-  handleTabClosed(event) {
+  applyTabClosed(event) {
     const tabIndex = this.todoByTab.delete(event.id)
   }
 

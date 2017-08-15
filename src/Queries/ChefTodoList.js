@@ -25,7 +25,7 @@ export default class ChefTodoList {
     }))
   }
 
-  handleFoodOrdered(event) {
+  applyFoodOrdered(event) {
     const group = new TodoListGroup({
       tab: event.id,
       items: event.orderedItems.map(i => new TodoListItem({
@@ -37,7 +37,7 @@ export default class ChefTodoList {
     this.todoList.push(group)
   }
 
-  handleFoodPrepared(event) {
+  applyFoodPrepared(event) {
     const group = this.todoList.find(g => g.tab === event.id)
     event.menuNumbers.forEach(num => {
       const itemIndex = group.items.findIndex(i => i.menuNumber === num)

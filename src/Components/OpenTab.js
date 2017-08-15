@@ -1,6 +1,6 @@
 import OpenTabCmd from '../Commands/OpenTab'
 import GUID from '../../lib/GUID'
-import dispatcher from '../dispatcher'
+import { dispatcher } from '../Domain'
 
 export default class OpenTab extends React.Component {
   constructor(props) {
@@ -15,24 +15,25 @@ export default class OpenTab extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this)
   }
 
-  handleTableChange(event) {
-    this.setState({tableNumber: event.target.value})
+  handleTableChange({target: {value: tableNumber}}) {
+    this.setState({tableNumber})
   }
 
-  handleWaiterChange(event) {
-    this.setState({waiter: event.target.value})
+  handleWaiterChange({target: {value: waiter}}) {
+    this.setState({waiter})
   }  
 
   handleSubmit(event) {
     event.preventDefault()
-    if (this.state.tableNumber === 0 || this.state.waiter === '') {
+    const {tableNumber, waiter} = this.state
+    if (tableNumber === 0 || waiter === '') {
       alert('FILL OUT THE FORM')
       return
     }
     dispatcher.sendCommand(new OpenTabCmd({
       id: GUID.newGuid(),
-      tableNumber: this.state.tableNumber,
-      waiter: this.state.waiter
+      tableNumber,
+      waiter
     }))
   }
   render() {

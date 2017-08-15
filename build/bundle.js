@@ -164,7 +164,7 @@ var MessageDispatcher = function () {
         this.eventSubscribers.set(event, []);
       }
       this.eventSubscribers.get(event).push(function (e) {
-        return subscriber['handle' + event](e);
+        return subscriber['apply' + event](e);
       });
     }
   }, {
@@ -737,6 +737,7 @@ var TabOpened = function TabOpened(_ref) {
 
   _classCallCheck(this, TabOpened);
 
+  console.log(id, tableNumber, waiter);
   this.id = id;
   this.tableNumber = tableNumber;
   this.waiter = waiter;
@@ -1104,8 +1105,8 @@ var ChefTodoList = function () {
       });
     }
   }, {
-    key: 'handleFoodOrdered',
-    value: function handleFoodOrdered(event) {
+    key: 'applyFoodOrdered',
+    value: function applyFoodOrdered(event) {
       var group = new TodoListGroup({
         tab: event.id,
         items: event.orderedItems.map(function (i) {
@@ -1119,8 +1120,8 @@ var ChefTodoList = function () {
       this.todoList.push(group);
     }
   }, {
-    key: 'handleFoodPrepared',
-    value: function handleFoodPrepared(event) {
+    key: 'applyFoodPrepared',
+    value: function applyFoodPrepared(event) {
       var group = this.todoList.find(function (g) {
         return g.tab === event.id;
       });
@@ -1172,9 +1173,7 @@ var _GUID = __webpack_require__(15);
 
 var _GUID2 = _interopRequireDefault(_GUID);
 
-var _dispatcher = __webpack_require__(22);
-
-var _dispatcher2 = _interopRequireDefault(_dispatcher);
+var _Domain = __webpack_require__(24);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1205,26 +1204,34 @@ var OpenTab = function (_React$Component) {
 
   _createClass(OpenTab, [{
     key: 'handleTableChange',
-    value: function handleTableChange(event) {
-      this.setState({ tableNumber: event.target.value });
+    value: function handleTableChange(_ref) {
+      var tableNumber = _ref.target.value;
+
+      this.setState({ tableNumber: tableNumber });
     }
   }, {
     key: 'handleWaiterChange',
-    value: function handleWaiterChange(event) {
-      this.setState({ waiter: event.target.value });
+    value: function handleWaiterChange(_ref2) {
+      var waiter = _ref2.target.value;
+
+      this.setState({ waiter: waiter });
     }
   }, {
     key: 'handleSubmit',
     value: function handleSubmit(event) {
       event.preventDefault();
-      if (this.state.tableNumber === 0 || this.state.waiter === '') {
+      var _state = this.state,
+          tableNumber = _state.tableNumber,
+          waiter = _state.waiter;
+
+      if (tableNumber === 0 || waiter === '') {
         alert('FILL OUT THE FORM');
         return;
       }
-      _dispatcher2.default.sendCommand(new _OpenTab2.default({
+      _Domain.dispatcher.sendCommand(new _OpenTab2.default({
         id: _GUID2.default.newGuid(),
-        tableNumber: this.state.tableNumber,
-        waiter: this.state.waiter
+        tableNumber: tableNumber,
+        waiter: waiter
       }));
     }
   }, {
@@ -1262,67 +1269,7 @@ var OpenTab = function (_React$Component) {
 exports.default = OpenTab;
 
 /***/ }),
-/* 22 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _MessageDispatcher = __webpack_require__(1);
-
-var _MessageDispatcher2 = _interopRequireDefault(_MessageDispatcher);
-
-var _EventStore = __webpack_require__(2);
-
-var _EventStore2 = _interopRequireDefault(_EventStore);
-
-var _TabAggregate = __webpack_require__(3);
-
-var _TabAggregate2 = _interopRequireDefault(_TabAggregate);
-
-var _ChefTodoList = __webpack_require__(16);
-
-var _ChefTodoList2 = _interopRequireDefault(_ChefTodoList);
-
-var _OpenTabs = __webpack_require__(23);
-
-var _OpenTabs2 = _interopRequireDefault(_OpenTabs);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Domain = function () {
-  function Domain() {
-    _classCallCheck(this, Domain);
-  }
-
-  _createClass(Domain, null, [{
-    key: 'setup',
-    value: function setup() {
-      this.dispatcher = new _MessageDispatcher2.default(new _EventStore2.default());
-      this.dispatcher.scanInstance(_TabAggregate2.default);
-
-      this.chefTodoQueries = new _ChefTodoList2.default();
-      this.dispatcher.scanInstance(this.chefTodoQueries);
-      return this.dispatcher;
-      //this.openTabQueries = new OpenTabs
-      //this.dispatcher.scanInstance(this.openTabQueries)
-    }
-  }]);
-
-  return Domain;
-}();
-
-exports.default = Domain.setup();
-
-/***/ }),
+/* 22 */,
 /* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1469,8 +1416,8 @@ var OpenTabs = function () {
       });
     }
   }, {
-    key: 'handleTabOpened',
-    value: function handleTabOpened(event) {
+    key: 'applyTabOpened',
+    value: function applyTabOpened(event) {
       this.todoByTab.set(event.id, new Tab({
         id: event.id,
         tableNumber: event.tableNumber,
@@ -1478,8 +1425,8 @@ var OpenTabs = function () {
       }));
     }
   }, {
-    key: 'handleDrinksOrdered',
-    value: function handleDrinksOrdered(event) {
+    key: 'applyDrinksOrdered',
+    value: function applyDrinksOrdered(event) {
       this._addItems(event.id, event.items.map(function (drink) {
         return new TabItem({
           menuNumber: drink.menuNumber,
@@ -1491,8 +1438,8 @@ var OpenTabs = function () {
       });
     }
   }, {
-    key: 'handleFoodPrepared',
-    value: function handleFoodPrepared(event) {
+    key: 'applyFoodPrepared',
+    value: function applyFoodPrepared(event) {
       this._moveItems(event.id, event.menuNumbers, function (tab) {
         return tab.inPreparation;
       }, function (tab) {
@@ -1500,8 +1447,8 @@ var OpenTabs = function () {
       });
     }
   }, {
-    key: 'handleDrinksServed',
-    value: function handleDrinksServed(event) {
+    key: 'applyDrinksServed',
+    value: function applyDrinksServed(event) {
       this._moveItems(event.id, event.menuNumbers, function (tab) {
         return tab.toServe;
       }, function (tab) {
@@ -1509,8 +1456,8 @@ var OpenTabs = function () {
       });
     }
   }, {
-    key: 'handleFoodServed',
-    value: function handleFoodServed(event) {
+    key: 'applyFoodServed',
+    value: function applyFoodServed(event) {
       this._moveItems(event.id, event.menuNumbers, function (tab) {
         return tab.toServe;
       }, function (tab) {
@@ -1518,8 +1465,8 @@ var OpenTabs = function () {
       });
     }
   }, {
-    key: 'handleTabClosed',
-    value: function handleTabClosed(event) {
+    key: 'applyTabClosed',
+    value: function applyTabClosed(event) {
       var tabIndex = this.todoByTab.delete(event.id);
     }
   }, {
@@ -1560,6 +1507,53 @@ var OpenTabs = function () {
 }();
 
 exports.default = OpenTabs;
+
+/***/ }),
+/* 24 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.openTabQueries = exports.chefTodoQueries = exports.dispatcher = undefined;
+
+var _MessageDispatcher = __webpack_require__(1);
+
+var _MessageDispatcher2 = _interopRequireDefault(_MessageDispatcher);
+
+var _EventStore = __webpack_require__(2);
+
+var _EventStore2 = _interopRequireDefault(_EventStore);
+
+var _TabAggregate = __webpack_require__(3);
+
+var _TabAggregate2 = _interopRequireDefault(_TabAggregate);
+
+var _ChefTodoList = __webpack_require__(16);
+
+var _ChefTodoList2 = _interopRequireDefault(_ChefTodoList);
+
+var _OpenTabs = __webpack_require__(23);
+
+var _OpenTabs2 = _interopRequireDefault(_OpenTabs);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var dispatcher = new _MessageDispatcher2.default(new _EventStore2.default());
+dispatcher.scanInstance(_TabAggregate2.default);
+
+var chefTodoQueries = new _ChefTodoList2.default();
+dispatcher.scanInstance(chefTodoQueries);
+
+var openTabQueries = new _OpenTabs2.default();
+dispatcher.scanInstance(openTabQueries);
+
+exports.dispatcher = dispatcher;
+exports.chefTodoQueries = chefTodoQueries;
+exports.openTabQueries = openTabQueries;
 
 /***/ })
 /******/ ]);
