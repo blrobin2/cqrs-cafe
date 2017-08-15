@@ -1,8 +1,3 @@
-import OpenTabCmd from '../Commands/OpenTab'
-import OpenTabsView from './OpenTabs'
-import GUID from '../../lib/GUID'
-import { dispatcher, openTabQueries } from '../Domain'
-
 export default class OpenTab extends React.Component {
   constructor(props) {
     super(props)
@@ -33,11 +28,7 @@ export default class OpenTab extends React.Component {
       alert('FILL OUT THE FORM')
       return
     }
-    dispatcher.sendCommand(new OpenTabCmd({
-      id: GUID.newGuid(),
-      tableNumber,
-      waiter
-    }))
+    this.props.handleAddTable(tableNumber, waiter)
   }
   render() {
     const el = React.createElement
@@ -78,8 +69,7 @@ export default class OpenTab extends React.Component {
               className: 'btn'
             }, 'Submit')
         )
-      ),
-      el(OpenTabsView, { activeTableNumbers: openTabQueries.activeTableNumbers() })
+      )
     )
   }
 }

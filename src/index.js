@@ -1,4 +1,4 @@
-import OpenTabView from './Components/OpenTab'
+import ContainerView from './Components/Container'
 
 const waitStaff = [
   'Carl',
@@ -15,15 +15,14 @@ const menu = [{
 },{
   menuNumber: 10,
   description: 'Mushroom and Bacon Pasta',
-  price: 6
+  price: 6,
+  isDrink: false
 }]
 
 const el = React.createElement
 ReactDOM.render(
-  el('div', {className:'container'},
-    el('div', {className: 'row justify-content-md-center'},
-      el(OpenTabView, {waitStaff: waitStaff.sort()})
-    )
-  ),
+  el(ContainerView, {
+    waitStaff, menu
+  }),
   document.getElementById('root')
 )

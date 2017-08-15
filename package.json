@@ -15,6 +15,7 @@
   },
   "scripts": {
     "watch": "webpack --watch",
-    "test": "mocha --compilers js:babel-core/register"
+    "test": "mocha --compilers js:babel-core/register",
+    "build": "webpack"
   }
 }

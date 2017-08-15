@@ -175,7 +175,7 @@ export default class TabAggregate extends Aggregate {
   }
 
   applyFoodPrepared(event) {
-    event.menuNumbers.forEach(num => {
+    event.menuNumbers.map(i => parseInt(i)).forEach(num => {
       const itemIndex = this.outstandingFood.findIndex(d => d.menuNumber === num)
       if (itemIndex > -1) {
         const food = this.outstandingFood.splice(itemIndex, 1)
@@ -240,7 +240,7 @@ export default class TabAggregate extends Aggregate {
    */
   _isFoodOutstanding(menuNumbers) {
     return this.outstandingFood.filter(item =>
-      menuNumbers.includes(item.menuNumber)).length > 0
+      menuNumbers.includes(item.menuNumber.toString())).length > 0
   }
 
   _isFoodPrepared(menuNumbers) {

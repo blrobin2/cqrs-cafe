@@ -62,14 +62,13 @@ export default class OpenTabs {
   }
 
   tabIdForTable(table) {
-    return Array.from(this.todoByTab)
-      .filter(tab => tab.tableNumber === table)
-      .map(tab => tab.id)[0]
+    return Array.from(this.todoByTab.values())
+      .find(tab => tab.tableNumber === table)
+      .id
   }
 
   tabForTable(table) {
-    const tab = Array.from(this.todoByTab)
-    .find(t => t.tableNumber === table)
+    const tab = Array.from(this.todoByTab.values()).find(t => t.tableNumber === table)
     return new TabStatus({
       tabId: tab.id,
       tableNumber: tab.tableNumber,
@@ -101,10 +100,20 @@ export default class OpenTabs {
 
   applyDrinksOrdered(event) {
     this._addItems(event.id,
-      event.items.map(drink => new TabItem({
+      event.orderedItems.map(drink => new TabItem({
         menuNumber: drink.menuNumber,
         description: drink.description,
         price: drink.price
+      })),
+      tab => tab.inPreparation)
+  }
+
+  applyFoodOrdered(event) {
+    this._addItems(event.id,
+      event.orderedItems.map(food => new TabItem({
+        menuNumber: food.menuNumber,
+        description: food.description,
+        price: food.price
       })),
       tab => tab.inPreparation)
   }

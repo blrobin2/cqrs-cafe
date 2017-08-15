@@ -39,7 +39,7 @@ export default class ChefTodoList {
 
   applyFoodPrepared(event) {
     const group = this.todoList.find(g => g.tab === event.id)
-    event.menuNumbers.forEach(num => {
+    event.menuNumbers.map(i => parseInt(i)).forEach(num => {
       const itemIndex = group.items.findIndex(i => i.menuNumber === num)
       if (itemIndex > -1) {
         group.items.splice(itemIndex, 1)

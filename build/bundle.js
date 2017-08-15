@@ -70,9 +70,9 @@
 "use strict";
 
 
-var _OpenTab = __webpack_require__(21);
+var _Container = __webpack_require__(27);
 
-var _OpenTab2 = _interopRequireDefault(_OpenTab);
+var _Container2 = _interopRequireDefault(_Container);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -86,11 +86,14 @@ var menu = [{
 }, {
   menuNumber: 10,
   description: 'Mushroom and Bacon Pasta',
-  price: 6
+  price: 6,
+  isDrink: false
 }];
 
 var el = React.createElement;
-ReactDOM.render(el('div', { className: 'container' }, el('div', { className: 'row justify-content-md-center' }, el(_OpenTab2.default, { waitStaff: waitStaff.sort() }))), document.getElementById('root'));
+ReactDOM.render(el(_Container2.default, {
+  waitStaff: waitStaff, menu: menu
+}), document.getElementById('root'));
 
 /***/ }),
 /* 1 */
@@ -540,7 +543,9 @@ var TabAggregate = function (_Aggregate) {
     value: function applyFoodPrepared(event) {
       var _this2 = this;
 
-      event.menuNumbers.forEach(function (num) {
+      event.menuNumbers.map(function (i) {
+        return parseInt(i);
+      }).forEach(function (num) {
         var itemIndex = _this2.outstandingFood.findIndex(function (d) {
           return d.menuNumber === num;
         });
@@ -628,7 +633,7 @@ var TabAggregate = function (_Aggregate) {
     key: '_isFoodOutstanding',
     value: function _isFoodOutstanding(menuNumbers) {
       return this.outstandingFood.filter(function (item) {
-        return menuNumbers.includes(item.menuNumber);
+        return menuNumbers.includes(item.menuNumber.toString());
       }).length > 0;
     }
   }, {
@@ -748,7 +753,6 @@ var TabOpened = function TabOpened(_ref) {
 
   _classCallCheck(this, TabOpened);
 
-  console.log(id, tableNumber, waiter);
   this.id = id;
   this.tableNumber = tableNumber;
   this.waiter = waiter;
@@ -1136,7 +1140,9 @@ var ChefTodoList = function () {
       var group = this.todoList.find(function (g) {
         return g.tab === event.id;
       });
-      event.menuNumbers.forEach(function (num) {
+      event.menuNumbers.map(function (i) {
+        return parseInt(i);
+      }).forEach(function (num) {
         var itemIndex = group.items.findIndex(function (i) {
           return i.menuNumber === num;
         });
@@ -1162,8 +1168,60 @@ exports.default = ChefTodoList;
 /***/ }),
 /* 17 */,
 /* 18 */,
-/* 19 */,
-/* 20 */,
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var PlaceOrder = function PlaceOrder(_ref) {
+  var id = _ref.id,
+      orderedItems = _ref.orderedItems;
+
+  _classCallCheck(this, PlaceOrder);
+
+  this.id = id;
+  this.orderedItems = orderedItems;
+};
+
+exports.default = PlaceOrder;
+
+/***/ }),
+/* 20 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var OrderedItem = function OrderedItem(_ref) {
+  var menuNumber = _ref.menuNumber,
+      description = _ref.description,
+      isDrink = _ref.isDrink,
+      price = _ref.price;
+
+  _classCallCheck(this, OrderedItem);
+
+  this.menuNumber = menuNumber;
+  this.description = description;
+  this.isDrink = isDrink;
+  this.price = price;
+};
+
+exports.default = OrderedItem;
+
+/***/ }),
 /* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1175,22 +1233,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _OpenTab = __webpack_require__(5);
-
-var _OpenTab2 = _interopRequireDefault(_OpenTab);
-
-var _OpenTabs = __webpack_require__(25);
-
-var _OpenTabs2 = _interopRequireDefault(_OpenTabs);
-
-var _GUID = __webpack_require__(15);
-
-var _GUID2 = _interopRequireDefault(_GUID);
-
-var _Domain = __webpack_require__(24);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -1245,11 +1287,7 @@ var OpenTab = function (_React$Component) {
         alert('FILL OUT THE FORM');
         return;
       }
-      _Domain.dispatcher.sendCommand(new _OpenTab2.default({
-        id: _GUID2.default.newGuid(),
-        tableNumber: tableNumber,
-        waiter: waiter
-      }));
+      this.props.handleAddTable(tableNumber, waiter);
     }
   }, {
     key: 'render',
@@ -1276,7 +1314,7 @@ var OpenTab = function (_React$Component) {
       }))), el('button', {
         type: 'submit',
         className: 'btn'
-      }, 'Submit'))), el(_OpenTabs2.default, { activeTableNumbers: _Domain.openTabQueries.activeTableNumbers() }));
+      }, 'Submit'))));
     }
   }]);
 
@@ -1389,16 +1427,14 @@ var OpenTabs = function () {
   }, {
     key: 'tabIdForTable',
     value: function tabIdForTable(table) {
-      return Array.from(this.todoByTab).filter(function (tab) {
+      return Array.from(this.todoByTab.values()).find(function (tab) {
         return tab.tableNumber === table;
-      }).map(function (tab) {
-        return tab.id;
-      })[0];
+      }).id;
     }
   }, {
     key: 'tabForTable',
     value: function tabForTable(table) {
-      var tab = Array.from(this.todoByTab).find(function (t) {
+      var tab = Array.from(this.todoByTab.values()).find(function (t) {
         return t.tableNumber === table;
       });
       return new TabStatus({
@@ -1444,11 +1480,24 @@ var OpenTabs = function () {
   }, {
     key: 'applyDrinksOrdered',
     value: function applyDrinksOrdered(event) {
-      this._addItems(event.id, event.items.map(function (drink) {
+      this._addItems(event.id, event.orderedItems.map(function (drink) {
         return new TabItem({
           menuNumber: drink.menuNumber,
           description: drink.description,
           price: drink.price
+        });
+      }), function (tab) {
+        return tab.inPreparation;
+      });
+    }
+  }, {
+    key: 'applyFoodOrdered',
+    value: function applyFoodOrdered(event) {
+      this._addItems(event.id, event.orderedItems.map(function (food) {
+        return new TabItem({
+          menuNumber: food.menuNumber,
+          description: food.description,
+          price: food.price
         });
       }), function (tab) {
         return tab.inPreparation;
@@ -1573,7 +1622,8 @@ exports.chefTodoQueries = chefTodoQueries;
 exports.openTabQueries = openTabQueries;
 
 /***/ }),
-/* 25 */
+/* 25 */,
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1585,11 +1635,151 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _Domain = __webpack_require__(24);
+
+var _OrderedItem = __webpack_require__(20);
+
+var _OrderedItem2 = _interopRequireDefault(_OrderedItem);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var PlaceOrder = function (_React$Component) {
+  _inherits(PlaceOrder, _React$Component);
+
+  function PlaceOrder(props) {
+    _classCallCheck(this, PlaceOrder);
+
+    var _this = _possibleConstructorReturn(this, (PlaceOrder.__proto__ || Object.getPrototypeOf(PlaceOrder)).call(this, props));
+
+    var order = _this.props.menu.reduce(function (obj, item) {
+      obj[item.menuNumber] = 0;
+      return obj;
+    }, {});
+
+    _this.state = Object.assign({}, order, { tableNumber: 0 });
+
+    _this.handleChangeAmount = _this.handleChangeAmount.bind(_this);
+    _this.handleChangeTable = _this.handleChangeTable.bind(_this);
+    _this.handlePlaceOrder = _this.handlePlaceOrder.bind(_this);
+    return _this;
+  }
+
+  _createClass(PlaceOrder, [{
+    key: 'handleChangeAmount',
+    value: function handleChangeAmount(event) {
+      this.setState(_defineProperty({}, event.target.id, parseInt(event.target.value)));
+    }
+  }, {
+    key: 'handleChangeTable',
+    value: function handleChangeTable(event) {
+      this.setState({
+        tableNumber: event.target.value
+      });
+    }
+  }, {
+    key: 'handlePlaceOrder',
+    value: function handlePlaceOrder(event) {
+      var _this2 = this;
+
+      event.preventDefault();
+      var order = this.props.menu.filter(function (item) {
+        return _this2.state[item.menuNumber] > 0;
+      }).reduce(function (orderedItems, item) {
+        var newItems = [];
+        for (var i = 0; i < _this2.state[item.menuNumber]; i++) {
+          newItems.push(new _OrderedItem2.default({
+            menuNumber: item.menuNumber,
+            description: item.description,
+            isDrink: item.isDrink,
+            price: item.price
+          }));
+        }
+        return orderedItems.concat(newItems);
+      }, []);
+
+      this.props.handlePlaceOrder(order, this.state.tableNumber);
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _this3 = this;
+
+      var el = React.createElement;
+      return el('form', { onSubmit: this.handlePlaceOrder }, el('h2', null, 'Place Order'), el('div', { className: 'form-group' }, el('label', { htmlFor: 'tableNumber' }, 'Table'), el('select', {
+        className: 'form-control',
+        name: 'tableNumber',
+        onChange: this.handleChangeTable,
+        value: this.state.tableNumber
+      }, el('option', null, '--SELECT TABLE #--'), this.props.activeTableNumbers.map(function (t, i) {
+        return el('option', { value: t, key: i }, t);
+      }))), el('table', { className: 'table' }, el('thead', null, el('tr', null, el('th', null, 'Menu #'), el('th', null, 'Description'), el('th', null, 'Price'), el('th', null, '# Order'))), el('tbody', null, this.props.menu.map(function (i) {
+        return el('tr', { key: i.menuNumber }, el('td', null, i.menuNumber, el('input', { type: 'hidden', value: i.menuNumber })), el('td', null, i.description), el('td', null, '$' + i.price.toFixed(2)), el('td', null, el('input', {
+          type: 'number',
+          id: i.menuNumber,
+          name: 'numberToOrder',
+          value: _this3.state[i.menuNumber],
+          className: 'form-control',
+          onChange: _this3.handleChangeAmount
+        })));
+      }))), el('button', { type: 'submit', className: 'btn' }, 'Place Order'));
+    }
+  }]);
+
+  return PlaceOrder;
+}(React.Component);
+
+exports.default = PlaceOrder;
+
+/***/ }),
+/* 27 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _OpenTab = __webpack_require__(21);
+
+var _OpenTab2 = _interopRequireDefault(_OpenTab);
+
+var _PlaceOrder = __webpack_require__(26);
+
+var _PlaceOrder2 = _interopRequireDefault(_PlaceOrder);
+
+var _MealsToPrepare = __webpack_require__(28);
+
+var _MealsToPrepare2 = _interopRequireDefault(_MealsToPrepare);
+
 var _GUID = __webpack_require__(15);
 
 var _GUID2 = _interopRequireDefault(_GUID);
 
 var _Domain = __webpack_require__(24);
+
+var _OpenTab3 = __webpack_require__(5);
+
+var _OpenTab4 = _interopRequireDefault(_OpenTab3);
+
+var _PlaceOrder3 = __webpack_require__(19);
+
+var _PlaceOrder4 = _interopRequireDefault(_PlaceOrder3);
+
+var _MarkFoodPrepared = __webpack_require__(29);
+
+var _MarkFoodPrepared2 = _interopRequireDefault(_MarkFoodPrepared);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1599,29 +1789,206 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var OpenTabs = function (_React$Component) {
-  _inherits(OpenTabs, _React$Component);
+var Container = function (_React$Component) {
+  _inherits(Container, _React$Component);
 
-  function OpenTabs() {
-    _classCallCheck(this, OpenTabs);
+  function Container(props) {
+    _classCallCheck(this, Container);
 
-    return _possibleConstructorReturn(this, (OpenTabs.__proto__ || Object.getPrototypeOf(OpenTabs)).apply(this, arguments));
+    var _this = _possibleConstructorReturn(this, (Container.__proto__ || Object.getPrototypeOf(Container)).call(this, props));
+
+    _this.state = {
+      tables: [],
+      orders: []
+    };
+
+    _this.handleAddTable = _this.handleAddTable.bind(_this);
+    _this.handlePlaceOrder = _this.handlePlaceOrder.bind(_this);
+    _this.handleMarkFoodPrepared = _this.handleMarkFoodPrepared.bind(_this);
+    return _this;
   }
 
-  _createClass(OpenTabs, [{
+  _createClass(Container, [{
+    key: 'handleAddTable',
+    value: function handleAddTable(tableNumber, waiter) {
+      _Domain.dispatcher.sendCommand(new _OpenTab4.default({
+        id: _GUID2.default.newGuid(),
+        tableNumber: tableNumber,
+        waiter: waiter
+      }));
+      this.setState({ tables: this.state.tables.concat(tableNumber) });
+    }
+  }, {
+    key: 'handlePlaceOrder',
+    value: function handlePlaceOrder(items, tableNumber) {
+      _Domain.dispatcher.sendCommand(new _PlaceOrder4.default({
+        orderedItems: items,
+        id: _Domain.openTabQueries.tabIdForTable(tableNumber)
+      }));
+      this.setState({ orders: this.state.orders.concat(tableNumber) });
+    }
+  }, {
+    key: 'handleMarkFoodPrepared',
+    value: function handleMarkFoodPrepared(id, menuNumbers) {
+      _Domain.dispatcher.sendCommand(new _MarkFoodPrepared2.default({
+        id: id,
+        menuNumbers: menuNumbers
+      }));
+      this.setState({ orders: this.state.orders.concat(tableNumber) });
+    }
+  }, {
     key: 'render',
     value: function render() {
       var el = React.createElement;
-      return el('div', null, el('h2', null, 'Open Tabs'), el('ul', null, this.props.activeTableNumbers.map(function (t, i) {
-        return el('li', { key: i }, t);
+      return el('div', { className: 'container' }, el('div', { className: 'row justify-content-md-center' }, el('div', { className: 'col-3' }, el(_OpenTab2.default, {
+        waitStaff: this.props.waitStaff.sort(),
+        handleAddTable: this.handleAddTable.bind(this)
+      })), el('div', { className: 'col' }, el(_PlaceOrder2.default, {
+        menu: this.props.menu,
+        activeTableNumbers: _Domain.openTabQueries.activeTableNumbers(),
+        handlePlaceOrder: this.handlePlaceOrder.bind(this)
+      }))), el('div', { className: 'row' }, el(_MealsToPrepare2.default, {
+        todoList: _Domain.chefTodoQueries.getTodoList(),
+        handleMarkFoodPrepared: this.handleMarkFoodPrepared.bind(this)
       })));
     }
   }]);
 
-  return OpenTabs;
+  return Container;
 }(React.Component);
 
-exports.default = OpenTabs;
+exports.default = Container;
+
+/***/ }),
+/* 28 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var MealsToPrepare = function (_React$Component) {
+  _inherits(MealsToPrepare, _React$Component);
+
+  function MealsToPrepare(props) {
+    _classCallCheck(this, MealsToPrepare);
+
+    var _this = _possibleConstructorReturn(this, (MealsToPrepare.__proto__ || Object.getPrototypeOf(MealsToPrepare)).call(this, props));
+
+    _this.state = {};
+    _this.handlePrepareFood = _this.handlePrepareFood.bind(_this);
+    _this.handleChangePrepared = _this.handleChangePrepared.bind(_this);
+    return _this;
+  }
+
+  _createClass(MealsToPrepare, [{
+    key: 'componentWillReceiveProps',
+    value: function componentWillReceiveProps(nextProps) {
+      var state = nextProps.todoList.reduce(function (obj, group) {
+        obj[group.tab] = group.items.reduce(function (obj2, item, i) {
+          obj2[item.menuNumber + '-' + i] = false;
+          return obj2;
+        }, {});
+        return obj;
+      }, {});
+
+      this.setState(state);
+    }
+  }, {
+    key: 'handleChangePrepared',
+    value: function handleChangePrepared(event) {
+      var _event$target$dataset = event.target.dataset,
+          group = _event$target$dataset.group,
+          menuNumber = _event$target$dataset.menuNumber,
+          index = _event$target$dataset.index;
+
+      var newState = Object.assign({}, this.state);
+      newState[group][menuNumber + '-' + index] = event.target.checked;
+      this.setState(newState);
+    }
+  }, {
+    key: 'handlePrepareFood',
+    value: function handlePrepareFood(event) {
+      var _this2 = this;
+
+      event.preventDefault();
+      var id = event.target.id.value;
+      var menuNumbers = Object.keys(this.state[id]).filter(function (menuNumber) {
+        return _this2.state[id]['' + menuNumber];
+      }).map(function (menuNumberPlusIndex) {
+        return menuNumberPlusIndex.split('-')[0];
+      });
+      this.props.handleMarkFoodPrepared(id, menuNumbers);
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _this3 = this;
+
+      var el = React.createElement;
+      return el('div', null, el('h2', null, 'Meals to Prepare'), this.props.todoList.map(function (group, index) {
+        return el('form', { key: index, onSubmit: _this3.handlePrepareFood }, el('input', {
+          type: 'hidden',
+          name: 'id',
+          value: group.tab
+        }), el('table', { className: 'table' }, el('thead', null, el('tr', null, el('th', null, 'Menu #'), el('th', null, 'Description'), el('th', null, 'Prepared'))), el('tbody', null, group.items.map(function (item, subIndex) {
+          return el('tr', { key: subIndex }, el('td', null, item.menuNumber), el('td', null, item.description), el('td', null, el('input', {
+            type: 'checkbox',
+            name: 'prepared_' + group.tab + '_' + item.menuNumber + '_' + subIndex,
+            onChange: _this3.handleChangePrepared,
+            'data-group': group.tab,
+            'data-menu-number': item.menuNumber,
+            'data-index': subIndex,
+            checked: _this3.state[group.tab][item.menuNumber + '-' + subIndex]
+          })));
+        }))), el('button', {
+          type: 'submit',
+          className: 'btn'
+        }, 'Mark Prepared'));
+      }));
+    }
+  }]);
+
+  return MealsToPrepare;
+}(React.Component);
+
+exports.default = MealsToPrepare;
+
+/***/ }),
+/* 29 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var MarkFoodPrepared = function MarkFoodPrepared(_ref) {
+  var id = _ref.id,
+      menuNumbers = _ref.menuNumbers;
+
+  _classCallCheck(this, MarkFoodPrepared);
+
+  this.id = id;
+  this.menuNumbers = menuNumbers;
+};
+
+exports.default = MarkFoodPrepared;
 
 /***/ })
 /******/ ]);
