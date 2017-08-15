@@ -52,7 +52,7 @@ export default class OpenTabs {
   }
 
   activeTableNumbers() {
-    return Array.from(this.todoByTab).map(tab => tab.tableNumber)
+    return Array.from(this.todoByTab.values()).map(tab => tab.tableNumber)
   }
 
   todoListForWaiter(waiter) {

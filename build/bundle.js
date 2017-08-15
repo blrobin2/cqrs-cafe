@@ -78,6 +78,17 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var waitStaff = ['Carl', 'Meghan', 'Dave', 'Brittney'];
 
+var menu = [{
+  menuNumber: 1,
+  description: 'Coke',
+  price: 1.5,
+  isDrink: true
+}, {
+  menuNumber: 10,
+  description: 'Mushroom and Bacon Pasta',
+  price: 6
+}];
+
 var el = React.createElement;
 ReactDOM.render(el('div', { className: 'container' }, el('div', { className: 'row justify-content-md-center' }, el(_OpenTab2.default, { waitStaff: waitStaff.sort() }))), document.getElementById('root'));
 
@@ -1169,6 +1180,10 @@ var _OpenTab = __webpack_require__(5);
 
 var _OpenTab2 = _interopRequireDefault(_OpenTab);
 
+var _OpenTabs = __webpack_require__(25);
+
+var _OpenTabs2 = _interopRequireDefault(_OpenTabs);
+
 var _GUID = __webpack_require__(15);
 
 var _GUID2 = _interopRequireDefault(_GUID);
@@ -1191,10 +1206,11 @@ var OpenTab = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (OpenTab.__proto__ || Object.getPrototypeOf(OpenTab)).call(this, props));
 
-    _this.state = {
+    _this.initialState = {
       tableNumber: 0,
       waiter: ''
     };
+    _this.state = _this.initialState;
 
     _this.handleTableChange = _this.handleTableChange.bind(_this);
     _this.handleWaiterChange = _this.handleWaiterChange.bind(_this);
@@ -1224,6 +1240,7 @@ var OpenTab = function (_React$Component) {
           tableNumber = _state.tableNumber,
           waiter = _state.waiter;
 
+      this.setState(this.initialState);
       if (tableNumber === 0 || waiter === '') {
         alert('FILL OUT THE FORM');
         return;
@@ -1242,24 +1259,24 @@ var OpenTab = function (_React$Component) {
         id: 'openTab',
         onSubmit: this.handleSubmit
       }, el('fieldset', null, el('div', { className: 'form-group' }, el('label', { htmlFor: 'tableNumber' }, 'Table Number'), el('input', {
-        type: 'text',
+        type: 'number',
         name: 'tableNumber',
         id: 'tableNumber',
         className: 'form-control',
-        value: this.state.value,
+        value: this.state.tableNumber,
         onChange: this.handleTableChange
       })), el('div', { className: 'form-group' }, el('label', { htmlFor: 'waiter' }, 'Waiter/Waitress'), el('select', {
         name: 'waiter',
         id: 'waiter',
         className: 'form-control',
-        value: this.state.value,
+        value: this.state.waiter,
         onChange: this.handleWaiterChange
       }, el('option', { value: 0, key: -1 }, '--Select--'), this.props.waitStaff.map(function (w, i) {
         return el('option', { value: w, key: i }, w);
       }))), el('button', {
         type: 'submit',
         className: 'btn'
-      }, 'Submit'))));
+      }, 'Submit'))), el(_OpenTabs2.default, { activeTableNumbers: _Domain.openTabQueries.activeTableNumbers() }));
     }
   }]);
 
@@ -1356,7 +1373,7 @@ var OpenTabs = function () {
   _createClass(OpenTabs, [{
     key: 'activeTableNumbers',
     value: function activeTableNumbers() {
-      return Array.from(this.todoByTab).map(function (tab) {
+      return Array.from(this.todoByTab.values()).map(function (tab) {
         return tab.tableNumber;
       });
     }
@@ -1554,6 +1571,57 @@ dispatcher.scanInstance(openTabQueries);
 exports.dispatcher = dispatcher;
 exports.chefTodoQueries = chefTodoQueries;
 exports.openTabQueries = openTabQueries;
+
+/***/ }),
+/* 25 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _GUID = __webpack_require__(15);
+
+var _GUID2 = _interopRequireDefault(_GUID);
+
+var _Domain = __webpack_require__(24);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var OpenTabs = function (_React$Component) {
+  _inherits(OpenTabs, _React$Component);
+
+  function OpenTabs() {
+    _classCallCheck(this, OpenTabs);
+
+    return _possibleConstructorReturn(this, (OpenTabs.__proto__ || Object.getPrototypeOf(OpenTabs)).apply(this, arguments));
+  }
+
+  _createClass(OpenTabs, [{
+    key: 'render',
+    value: function render() {
+      var el = React.createElement;
+      return el('div', null, el('h2', null, 'Open Tabs'), el('ul', null, this.props.activeTableNumbers.map(function (t, i) {
+        return el('li', { key: i }, t);
+      })));
+    }
+  }]);
+
+  return OpenTabs;
+}(React.Component);
+
+exports.default = OpenTabs;
 
 /***/ })
 /******/ ]);

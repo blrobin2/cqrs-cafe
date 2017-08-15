@@ -1,14 +1,16 @@
 import OpenTabCmd from '../Commands/OpenTab'
+import OpenTabsView from './OpenTabs'
 import GUID from '../../lib/GUID'
-import { dispatcher } from '../Domain'
+import { dispatcher, openTabQueries } from '../Domain'
 
 export default class OpenTab extends React.Component {
   constructor(props) {
     super(props)
-    this.state = {
+    this.initialState = {
       tableNumber: 0,
       waiter: ''
     }
+    this.state = this.initialState
 
     this.handleTableChange = this.handleTableChange.bind(this)
     this.handleWaiterChange = this.handleWaiterChange.bind(this)
@@ -26,6 +28,7 @@ export default class OpenTab extends React.Component {
   handleSubmit(event) {
     event.preventDefault()
     const {tableNumber, waiter} = this.state
+    this.setState(this.initialState)
     if (tableNumber === 0 || waiter === '') {
       alert('FILL OUT THE FORM')
       return
@@ -48,11 +51,11 @@ export default class OpenTab extends React.Component {
           el('div', {className: 'form-group'},
             el('label', {htmlFor: 'tableNumber'}, 'Table Number'),
             el('input', {
-              type: 'text',
+              type: 'number',
               name: 'tableNumber',
               id: 'tableNumber',
               className: 'form-control',
-              value: this.state.value,
+              value: this.state.tableNumber,
               onChange: this.handleTableChange
             }),
           ),
@@ -62,7 +65,7 @@ export default class OpenTab extends React.Component {
                 name: 'waiter',
                 id: 'waiter',
                 className: 'form-control',
-                value: this.state.value,
+                value: this.state.waiter,
                 onChange: this.handleWaiterChange
               },
               el('option', {value: 0, key: -1}, '--Select--'),
@@ -75,7 +78,8 @@ export default class OpenTab extends React.Component {
               className: 'btn'
             }, 'Submit')
         )
-      )
+      ),
+      el(OpenTabsView, { activeTableNumbers: openTabQueries.activeTableNumbers() })
     )
   }
 }
