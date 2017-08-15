@@ -1,5 +1,16 @@
-import TodoListGroup from './TodoListGroup'
-import TodoListItem from './TodoListItem'
+class TodoListItem {
+  constructor({menuNumber, description}) {
+    this.menuNumber = menuNumber
+    this.description = description
+  }
+}
+
+class TodoListGroup {
+  constructor({tab, items}) {
+    this.tab = tab
+    this.items = items
+  }
+}
 
 export default class ChefTodoList {
   constructor() {
