@@ -1,39 +1,18 @@
-import MessageDispatcher from '../lib/MessageDispatcher'
-import EventStore from '../lib/EventStore'
-import GUID from '../lib/GUID'
+import OpenTabView from './Components/OpenTab'
 
-import TabAggregate from './Aggregates/TabAggregate'
-import OpenTab from './Commands/OpenTab'
-import ChefTodoList from './Queries/ChefTodoList'
-import PlaceOrder from './Commands/PlaceOrder'
-import OrderedItem from './Domain/OrderedItem'
+const waitStaff = [
+  'Carl',
+  'Meghan',
+  'Dave',
+  'Brittney'
+]
 
-const dispatcher = new MessageDispatcher(new EventStore)
-dispatcher.scanInstance(TabAggregate)
-
-// this.openTabQueries = new OpenTabs
-// this.dispatcher.scanInstance(this.openTabQueries)
-
-const chefTodoQueries = new ChefTodoList
-dispatcher.scanInstance(chefTodoQueries)
-
-function sendOpenTab({tableNumber, waiter}) {
-  const id = GUID.newGuid()
-  dispatcher.sendCommand(new OpenTab({
-    id: id,
-    tableNumber: tableNumber,
-    waiter: waiter
-  }))
-  dispatcher.sendCommand(new PlaceOrder({
-    id: id,
-    orderedItems: [ new OrderedItem({
-      menuNumber: 1,
-      description: 'Hot Dog',
-      isDrink: false,
-      price: 4
-    }) ]
-  }))
-}
-
-window.sendOpenTab = sendOpenTab
-window.chefTodoQueries = chefTodoQueries
+const el = React.createElement
+ReactDOM.render(
+  el('div', {className:'container'}, 
+    el('div', {className: 'row justify-content-md-center'},
+      el(OpenTabView, {waitStaff: waitStaff.sort()})
+    )
+  ),
+  document.getElementById('root')
+)
