@@ -1,4 +1,5 @@
 import { Component, createElement } from 'react'
+import { Link } from 'react-router-dom'
 const el = createElement
 
 export default class WaiterTodo extends Component {
@@ -23,7 +24,11 @@ export default class WaiterTodo extends Component {
                 )
               )
             )
-          )
+          ),
+          el(Link, {
+            to: `/open-tabs/${table.tableNumber}`,
+            className: 'btn'
+          }, 'Go To Tab')
         )
       )
     )

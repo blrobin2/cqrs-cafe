@@ -10,6 +10,7 @@ import OpenTabView from './OpenTab'
 import PlaceOrderView from './PlaceOrder'
 import MealsToPrepareView from './MealsToPrepare'
 import WaiterTodoView from './WaiterTodo'
+import TabStatusView from './TabStatus'
 
 import GUID from '../../lib/GUID'
 import { dispatcher, openTabQueries, chefTodoQueries } from '../Domain'
@@ -17,6 +18,8 @@ import { dispatcher, openTabQueries, chefTodoQueries } from '../Domain'
 import OpenTabCmd from '../Commands/OpenTab'
 import PlaceOrderCmd from '../Commands/PlaceOrder'
 import MarkFoodPrepared from '../Commands/MarkFoodPrepared'
+import MarkFoodServed from '../Commands/MarkFoodServed'
+import MarkDrinkServed from '../Commands/MarkDrinksServed'
 
 class Container extends Component {
   constructor(props) {
@@ -29,6 +32,7 @@ class Container extends Component {
     this.handleAddTable = this.handleAddTable.bind(this)
     this.handlePlaceOrder = this.handlePlaceOrder.bind(this)
     this.handleMarkFoodPrepared = this.handleMarkFoodPrepared.bind(this)
+    this.handleMarkItemsServed = this.handleMarkItemsServed.bind(this)
   }
 
   handleAddTable(tableNumber, waiter) {
@@ -46,7 +50,7 @@ class Container extends Component {
       id: openTabQueries.tabIdForTable(tableNumber)
     }))
     this.setState({orders: this.state.orders.concat(tableNumber)})
-    this.props.history.push('/')
+    this.props.history.push(`/open-tabs/${tableNumber}`)
   }
 
   handleMarkFoodPrepared(id, menuNumbers) {
@@ -55,6 +59,15 @@ class Container extends Component {
       menuNumbers: menuNumbers
     }))
     this.setState({orders: this.state.orders.concat(menuNumbers)})
+  }
+
+  handleMarkItemsServed(id, menuNumbers) {
+    console.log(menuNumbers);
+    const allItems = this.props.menu.filter(item => menuNumbers.include(item.menuNumber))
+    const foodItems = allItems.filter(item => !item.isDrink)
+    const drinkItems = allItems.filter(item => item.isDrink)
+
+
   }
 
   render() {
@@ -91,6 +104,13 @@ class Container extends Component {
               }),
               el(Route, {
                 path: '/open-tabs/:tableNumber',
+                render: (props) => el(TabStatusView, {
+                  tab: openTabQueries.tabForTable(props.match.params.tableNumber),
+                  handleMarkItemsServed: this.handleMarkItemsServed.bind(this)
+                })
+              }),
+              el(Route, {
+                path: '/order-food/:tableNumber',
                 render: (props) => el(PlaceOrderView, {
                   tableNumber: props.match.params.tableNumber,
                   menu: this.props.menu,

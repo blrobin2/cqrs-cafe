@@ -6,7 +6,7 @@ class TabItem {
   }
 }
 
-class TabStaus {
+class TabStatus {
   constructor({tabId, tableNumber, toServe, inPreparation, served}) {
     this.tabId = tabId
     this.tableNumber = tableNumber
