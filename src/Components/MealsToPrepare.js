@@ -5,13 +5,7 @@ export default class MealsToPrepare extends Component {
   constructor(props) {
     super(props)
 
-    this.state = {}
-    this.handlePrepareFood = this.handlePrepareFood.bind(this)
-    this.handleChangePrepared = this.handleChangePrepared.bind(this)
-  }
-
-  componentWillReceiveProps(nextProps) {
-    const state = nextProps.todoList.reduce((obj, group) => {
+    const state = this.props.todoList.reduce((obj, group) => {
       obj[group.tab] = group.items.reduce((obj2, item, i) => {
         obj2[`${item.menuNumber}-${i}`] = false
         return obj2
@@ -19,7 +13,9 @@ export default class MealsToPrepare extends Component {
       return obj
     }, {})
 
-    this.setState(state)
+    this.state = state
+    this.handlePrepareFood = this.handlePrepareFood.bind(this)
+    this.handleChangePrepared = this.handleChangePrepared.bind(this)
   }
 
   handleChangePrepared(event) {

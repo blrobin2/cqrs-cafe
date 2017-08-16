@@ -6,28 +6,21 @@ const el = createElement
 export default class PlaceOrder extends Component {
   constructor(props) {
     super(props)
-
-    this.initialState = Object.assign({}, this.props.menu.reduce((obj, item) => {
+    console.log(this.props)
+    this.initialState = this.props.menu.reduce((obj, item) => {
       obj[item.menuNumber] = 0
       return obj
-    }, {}), { tableNumber: 0 });
+    }, {})
 
     this.state = this.initialState
 
     this.handleChangeAmount = this.handleChangeAmount.bind(this)
-    this.handleChangeTable = this.handleChangeTable.bind(this)
     this.handlePlaceOrder = this.handlePlaceOrder.bind(this)
   }
 
   handleChangeAmount(event) {
     this.setState({
       [event.target.id]: parseInt(event.target.value)
-    })
-  }
-
-  handleChangeTable(event) {
-    this.setState({
-      tableNumber: event.target.value
     })
   }
 
@@ -48,27 +41,13 @@ export default class PlaceOrder extends Component {
         return orderedItems.concat(newItems)
       }, [])
     
-    this.props.handlePlaceOrder(order, this.state.tableNumber)
+    this.props.handlePlaceOrder(order, this.props.tableNumber)
     this.setState(this.initialState)
   }
 
   render() {
     return el('form', {onSubmit: this.handlePlaceOrder},
       el('h2', null, 'Place Order'),
-      el('div', {className: 'form-group'},
-        el('label', {htmlFor: 'tableNumber'}, 'Table'),
-        el('select', {
-            className: 'form-control',
-            name: 'tableNumber',
-            onChange: this.handleChangeTable,
-            value: this.state.tableNumber
-          },
-          el('option', null, '--SELECT TABLE #--'),
-          this.props.activeTableNumbers.map((t,i) =>
-            el('option', {value: t, key: i}, t)
-          )
-        )
-      ),
       el('table', {className: 'table'},
         el('thead', null,
           el('tr', null,

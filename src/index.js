@@ -1,6 +1,6 @@
 import { createElement } from 'react'
 import { render }from 'react-dom'
-
+import { BrowserRouter } from 'react-router-dom'
 import ContainerView from './Components/Container'
 
 const waitStaff = [
@@ -24,8 +24,10 @@ const menu = [{
 
 const el = createElement
 render(
-  el(ContainerView, {
-    waitStaff, menu
-  }),
+  el(BrowserRouter, null,
+    el(ContainerView, {
+      waitStaff, menu
+    })
+  ),
   document.getElementById('root')
 )
