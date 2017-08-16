@@ -1,4 +1,7 @@
-export default class OpenTab extends React.Component {
+import { Component, createElement } from 'react'
+const el = createElement
+
+export default class OpenTab extends Component {
   constructor(props) {
     super(props)
     this.initialState = {
@@ -31,7 +34,6 @@ export default class OpenTab extends React.Component {
     this.props.handleAddTable(tableNumber, waiter)
   }
   render() {
-    const el = React.createElement
     return el('div', null,
       el('h2', null, 'Open Tab'),
       el('form', {

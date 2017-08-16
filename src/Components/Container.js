@@ -1,6 +1,10 @@
+import { Component, createElement } from 'react'
+const el = createElement
+
 import OpenTabView from './OpenTab'
 import PlaceOrderView from './PlaceOrder'
 import MealsToPrepareView from './MealsToPrepare'
+import WaiterTodoView from './WaiterTodo'
 
 import GUID from '../../lib/GUID'
 import { dispatcher, openTabQueries, chefTodoQueries } from '../Domain'
@@ -9,7 +13,7 @@ import OpenTabCmd from '../Commands/OpenTab'
 import PlaceOrderCmd from '../Commands/PlaceOrder'
 import MarkFoodPrepared from '../Commands/MarkFoodPrepared'
 
-export default class Container extends React.Component {
+export default class Container extends Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -48,7 +52,6 @@ export default class Container extends React.Component {
   }
 
   render() {
-    const el = React.createElement
     return el('div', {className:'container'},
       el('div', {className: 'row justify-content-md-center'},
         el('div', {className:'col-3'},
@@ -66,10 +69,20 @@ export default class Container extends React.Component {
         )
       ),
       el('div', {className: 'row'},
-        el(MealsToPrepareView, {
-          todoList: chefTodoQueries.getTodoList(),
-          handleMarkFoodPrepared: this.handleMarkFoodPrepared.bind(this)
-        })
+        el('div', {className: 'col'},
+          el(MealsToPrepareView, {
+            todoList: chefTodoQueries.getTodoList(),
+            handleMarkFoodPrepared: this.handleMarkFoodPrepared.bind(this)
+          })
+        ),
+        el('div', {className: 'col'},
+          this.props.waitStaff.map(waiter =>
+            el(WaiterTodoView, {
+              key: waiter,
+              waiter: waiter,
+              todos: openTabQueries.todoListForWaiter(waiter)})
+          )
+        )
       )
     )
   }

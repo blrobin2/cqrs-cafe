@@ -56,7 +56,7 @@ export default class OpenTabs {
   }
 
   todoListForWaiter(waiter) {
-    return Array.from(this.todoByTab)
+    return Array.from(this.todoByTab.values())
       .filter(tab => tab.waiter === waiter)
       .filter(tab => tab.toServe.length > 0)
   }
@@ -105,7 +105,7 @@ export default class OpenTabs {
         description: drink.description,
         price: drink.price
       })),
-      tab => tab.inPreparation)
+      tab => tab.toServe)
   }
 
   applyFoodOrdered(event) {
@@ -168,7 +168,7 @@ export default class OpenTabs {
     menuNumbers.forEach(num => {
       const serveItemIndex = fromList.findIndex(f => f.menuNumber === num)
       const serveItem = fromList.splice(serveItemIndex, 1)
-      toList.push(serveItem)
+      toList.push(...serveItem)
     })
   }
 }

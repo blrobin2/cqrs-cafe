@@ -1,3 +1,6 @@
+import { createElement } from 'react'
+import { render }from 'react-dom'
+
 import ContainerView from './Components/Container'
 
 const waitStaff = [
@@ -19,8 +22,8 @@ const menu = [{
   isDrink: false
 }]
 
-const el = React.createElement
-ReactDOM.render(
+const el = createElement
+render(
   el(ContainerView, {
     waitStaff, menu
   }),

@@ -1,4 +1,7 @@
-export default class MealsToPrepare extends React.Component {
+import { Component, createElement } from 'react'
+const el = createElement
+
+export default class MealsToPrepare extends Component {
   constructor(props) {
     super(props)
 
@@ -36,7 +39,6 @@ export default class MealsToPrepare extends React.Component {
   }
 
   render() {
-    const el = React.createElement
     return el('div', null,
       el('h2', null, 'Meals to Prepare'),
       this.props.todoList.map((group, index) =>

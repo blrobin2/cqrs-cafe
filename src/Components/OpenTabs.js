@@ -1,9 +1,8 @@
-import GUID from '../../lib/GUID'
-import { openTabQueries } from '../Domain'
+import { Component, createElement } from 'react'
+const el = createElement
 
-export default class OpenTabs extends React.Component {
+export default class OpenTabs extends Component {
   render() {
-    const el = React.createElement
     return el('div', null,
       el('h2', null, 'Open Tabs'),
       el('ul', null,

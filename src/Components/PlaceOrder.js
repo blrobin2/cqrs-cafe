@@ -1,16 +1,18 @@
-import { openTabQueries } from '../Domain'
+import { Component, createElement } from 'react'
 import OrderedItem from '../Domain/OrderedItem'
 
-export default class PlaceOrder extends React.Component {
+const el = createElement
+
+export default class PlaceOrder extends Component {
   constructor(props) {
     super(props)
 
-    const order = this.props.menu.reduce((obj, item) => {
+    this.initialState = Object.assign({}, this.props.menu.reduce((obj, item) => {
       obj[item.menuNumber] = 0
       return obj
-    }, {})
+    }, {}), { tableNumber: 0 });
 
-    this.state = Object.assign({}, order, { tableNumber: 0});
+    this.state = this.initialState
 
     this.handleChangeAmount = this.handleChangeAmount.bind(this)
     this.handleChangeTable = this.handleChangeTable.bind(this)
@@ -47,10 +49,10 @@ export default class PlaceOrder extends React.Component {
       }, [])
     
     this.props.handlePlaceOrder(order, this.state.tableNumber)
+    this.setState(this.initialState)
   }
 
   render() {
-    const el = React.createElement
     return el('form', {onSubmit: this.handlePlaceOrder},
       el('h2', null, 'Place Order'),
       el('div', {className: 'form-group'},
