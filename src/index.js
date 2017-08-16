@@ -4,10 +4,10 @@ import { BrowserRouter } from 'react-router-dom'
 import ContainerView from './Components/Container'
 
 const waitStaff = [
+  'Brittney',
   'Carl',
-  'Meghan',
   'Dave',
-  'Brittney'
+  'Meghan',
 ]
 
 const menu = [{
