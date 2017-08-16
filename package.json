@@ -17,7 +17,7 @@
   "scripts": {
     "watch": "webpack-dev-server --hot --inline --content-base build/",
     "test": "mocha --compilers js:babel-core/register",
-    "build": "webpack"
+    "build": "webpack -p"
   },
   "dependencies": {
     "history": "^4.6.3",
