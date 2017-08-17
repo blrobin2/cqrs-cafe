@@ -6,7 +6,6 @@ const el = createElement
 export default class PlaceOrder extends Component {
   constructor(props) {
     super(props)
-    console.log(this.props)
     this.initialState = this.props.menu.reduce((obj, item) => {
       obj[item.menuNumber] = 0
       return obj

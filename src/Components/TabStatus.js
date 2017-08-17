@@ -6,24 +6,32 @@ export default class TabStatus extends Component {
   constructor(props) {
     super(props)
 
-    const state = this.props.tab.toServe.reduce((obj, item, i) => {
+    this.initialState = this.props.tab.toServe.reduce((obj, item, i) => {
       obj[`${item.menuNumber}-${i}`] = false
       return obj
     }, {})
 
-    this.state = state
+    this.state = this.initialState
 
     this.handleChangeServed = this.handleChangeServed.bind(this)
     this.handleMarkItemsServed = this.handleMarkItemsServed.bind(this)
   }
 
   handleChangeServed(event) {
-    console.log(event)
+    const {menuNumber, index} = event.target.dataset
+    const newState = ({}, this.state)
+    newState[`${menuNumber}-${index}`] = event.target.checked
+    this.setState(newState)
   }
 
   handleMarkItemsServed(event) {
     event.preventDefault()
-    console.log(event)
+    const menuNumbers = Object.keys(this.state)
+      .filter(menuNumber => this.state[`${menuNumber}`])
+      .map(menuNumberPlusIndex => menuNumberPlusIndex.split('-')[0])
+      .map(menuNumbers => parseInt(menuNumbers))
+    this.props.handleMarkItemsServed(this.props.tab.tabId, menuNumbers)
+    this.setState(this.initialState)
   }
 
   render() {

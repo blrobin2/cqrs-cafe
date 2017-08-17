@@ -69,7 +69,7 @@ export default class OpenTab extends Component {
           el('button', {
               type: 'submit',
               className: 'btn'
-            }, 'Submit')
+            }, 'Open Tab')
         )
       )
     )

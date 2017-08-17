@@ -11,6 +11,8 @@ import PlaceOrderView from './PlaceOrder'
 import MealsToPrepareView from './MealsToPrepare'
 import WaiterTodoView from './WaiterTodo'
 import TabStatusView from './TabStatus'
+import CloseTabView from './CloseTab'
+import ErrorView from './Error'
 
 import GUID from '../../lib/GUID'
 import { dispatcher, openTabQueries, chefTodoQueries } from '../Domain'
@@ -20,54 +22,102 @@ import PlaceOrderCmd from '../Commands/PlaceOrder'
 import MarkFoodPrepared from '../Commands/MarkFoodPrepared'
 import MarkFoodServed from '../Commands/MarkFoodServed'
 import MarkDrinkServed from '../Commands/MarkDrinksServed'
+import CloseTab from '../Commands/CloseTab'
 
 class Container extends Component {
   constructor(props) {
     super(props)
     this.state = {
       tables: [],
-      orders: []
+      orders: [],
+      served: []
     }
 
     this.handleAddTable = this.handleAddTable.bind(this)
     this.handlePlaceOrder = this.handlePlaceOrder.bind(this)
     this.handleMarkFoodPrepared = this.handleMarkFoodPrepared.bind(this)
     this.handleMarkItemsServed = this.handleMarkItemsServed.bind(this)
+    this.handleCloseTab = this.handleCloseTab.bind(this)
   }
 
   handleAddTable(tableNumber, waiter) {
-    dispatcher.sendCommand(new OpenTabCmd({
-      id: GUID.newGuid(),
-      tableNumber,
-      waiter
-    }))
-    this.setState({tables: this.state.tables.concat(tableNumber)})
+    try {
+      dispatcher.sendCommand(new OpenTabCmd({
+        id: GUID.newGuid(),
+        tableNumber,
+        waiter
+      }))
+      this.setState({tables: this.state.tables.concat(tableNumber)})
+    } catch (e) {
+      alert(e.message)
+    }
   }
 
   handlePlaceOrder(items, tableNumber) {
-    dispatcher.sendCommand(new PlaceOrderCmd({
-      orderedItems: items,
-      id: openTabQueries.tabIdForTable(tableNumber)
-    }))
-    this.setState({orders: this.state.orders.concat(tableNumber)})
-    this.props.history.push(`/open-tabs/${tableNumber}`)
+    try {
+      dispatcher.sendCommand(new PlaceOrderCmd({
+        orderedItems: items,
+        id: openTabQueries.tabIdForTable(tableNumber)
+      }))
+      this.setState({orders: this.state.orders.concat(tableNumber)})
+      this.props.history.push(`/open-tabs/${tableNumber}`)
+    } catch (e) {
+      alert(e.message)
+    }
   }
 
   handleMarkFoodPrepared(id, menuNumbers) {
-    dispatcher.sendCommand(new MarkFoodPrepared({
-      id: id,
-      menuNumbers: menuNumbers
-    }))
-    this.setState({orders: this.state.orders.concat(menuNumbers)})
+    try {
+      dispatcher.sendCommand(new MarkFoodPrepared({
+        id: id,
+        menuNumbers: menuNumbers
+      }))
+      this.setState({orders: this.state.orders.concat(menuNumbers)})
+    } catch (e) {
+      alert(e.message)
+    }
   }
 
   handleMarkItemsServed(id, menuNumbers) {
-    console.log(menuNumbers);
-    const allItems = this.props.menu.filter(item => menuNumbers.include(item.menuNumber))
-    const foodItems = allItems.filter(item => !item.isDrink)
-    const drinkItems = allItems.filter(item => item.isDrink)
+    const foodItems = menuNumbers.filter(menuNumber => {
+      for (let item of this.props.menu) {
+        if (item.menuNumber === menuNumber && !item.isDrink) {
+          return true
+        }
+      }
+      return false
+    });
+    const drinkItems = menuNumbers.filter(menuNumber =>
+      !foodItems.includes(menuNumber))
+    try {
+      if (foodItems.length) {
+        dispatcher.sendCommand(new MarkFoodServed({
+          id: id,
+          menuNumbers: foodItems
+        }))
+      }
+      if (drinkItems.length) {
+        dispatcher.sendCommand(new MarkDrinkServed({
+          id: id,
+          menuNumbers: drinkItems
+        }))
+      }
+      this.setState({served: this.state.served.concat(1)})
+    } catch (e) {
+      alert(e.message)
+    }
+  }
 
-
+  handleCloseTab(id, amountPaid) {
+    try {
+      dispatcher.sendCommand(new CloseTab({
+        id: id,
+        amountPaid: amountPaid
+      }))
+      this.setState({tables: this.state.tables.unshift()})
+    } catch (e) {
+      alert(e.message)
+    }
   }
 
   render() {
@@ -125,7 +175,14 @@ class Container extends Component {
                   waiter: waiter,
                   todos: openTabQueries.todoListForWaiter(waiter)
                 })
-              }})
+              }}),
+              el(Route, {
+                path: '/close-table/:tableNumber',
+                render: (props) => el(CloseTabView, {
+                  invoice: openTabQueries.invoiceForTable(props.match.params.tableNumber)
+                })
+              }),
+              el(Route, { component: ErrorView })
             )
           )
         )
