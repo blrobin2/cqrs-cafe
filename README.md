@@ -16,7 +16,7 @@ I initially tried to write this in [TypeScript](https://www.typescriptlang.org/)
 I wanted this to be easily run in the browser, without having to worry about setting up a server or anything. If you wanted to, you could write an Event Store that ties to an API or to your preferred SQL/NoSQL persistence layer and initialize it in the Domain instead of the provided Event Store.
 
 ## How it works
-The index.js initializes the React stuff, Domain.js initializes the MessageDispatcher,EventStore, Aggregates, and Queries.
+The index.js initializes the React stuff, Domain.js initializes the MessageDispatcher, EventStore, Aggregates, and Queries.
 
 The EventStore holds all of the events that have happened in the system, organized by Aggregate ID. Because the provided one is in memory, it will lose all events with a screen refresh.
 
@@ -24,7 +24,7 @@ The Message Dispatcher consumes Aggregates and Queries, passing commands to the 
 
 In the Aggregate, it looks for methods prepended with 'apply' for applying Events that happen in the system, and methods prepended with 'handle' for handling Commands that are dispatched.
 
-In queries, it looks at the 'iSubscribeTo' property to determine which Events, and methods prepended with 'apply' for applying Events that happen in the system.
+In queries, it looks at the 'iSubscribeTo' property to determine which Events about which it should notify the query, and methods prepended with 'apply' for applying Events that happen in the system.
 
 The queries are bound to the Domain so that we only initialize them once and they can hold the most recent state as a result of the events.
 
