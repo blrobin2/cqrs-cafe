@@ -44,7 +44,7 @@ class Container extends Component {
     try {
       dispatcher.sendCommand(new OpenTabCmd({
         id: GUID.newGuid(),
-        tableNumber,
+        tableNumber: parseInt(tableNumber),
         waiter
       }))
       this.setState({tables: this.state.tables.concat(tableNumber)})
@@ -115,6 +115,7 @@ class Container extends Component {
         amountPaid: amountPaid
       }))
       this.setState({tables: this.state.tables.unshift()})
+      this.props.history.push('/')
     } catch (e) {
       alert(e.message)
     }
@@ -179,7 +180,8 @@ class Container extends Component {
               el(Route, {
                 path: '/close-table/:tableNumber',
                 render: (props) => el(CloseTabView, {
-                  invoice: openTabQueries.invoiceForTable(props.match.params.tableNumber)
+                  invoice: openTabQueries.invoiceForTable(props.match.params.tableNumber),
+                  handleCloseTab: this.handleCloseTab.bind(this)
                 })
               }),
               el(Route, { component: ErrorView })

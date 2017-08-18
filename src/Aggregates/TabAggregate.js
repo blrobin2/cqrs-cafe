@@ -196,7 +196,6 @@ export default class TabAggregate extends Aggregate {
       if (itemIndex > -1) {
         this.servedItemsValue += this.outstandingDrinks[itemIndex].price
         this.outstandingDrinks.splice(itemIndex, 1)
-        
       }
     })
   }
@@ -240,7 +239,7 @@ export default class TabAggregate extends Aggregate {
    */
   _isFoodOutstanding(menuNumbers) {
     return this.outstandingFood.filter(item =>
-      menuNumbers.includes(item.menuNumber.toString())).length > 0
+      menuNumbers.includes(item.menuNumber)).length > 0
   }
 
   _isFoodPrepared(menuNumbers) {

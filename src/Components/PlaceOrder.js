@@ -68,6 +68,8 @@ export default class PlaceOrder extends Component {
               el('td', null,
                 el('input', {
                   type: 'number',
+                  min: '0',
+                  max: '50',
                   id: i.menuNumber,
                   name: 'numberToOrder',
                   value: this.state[i.menuNumber],

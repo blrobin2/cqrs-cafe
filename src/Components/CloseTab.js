@@ -19,11 +19,7 @@ export default class CloseTab extends Component {
 
   handleCloseTab(event) {
     event.preventDefault()
-    if (this.props.invoice.hasUnservedItems) {
-      alert('Cannot close out tab with unserved items')
-      return
-    }
-    this.props.handleCloseTab()
+    this.props.handleCloseTab(this.props.invoice.tabId, this.state.amountPaid)
   }
 
   render() {
@@ -49,18 +45,25 @@ export default class CloseTab extends Component {
           )
         )
       ),
-      el('form', { onSubmit: this.handleCloseTab },
+      this.props.invoice.hasUnservedItems
+      ? el('h3', null, 'Note: Invoice has unserved items and cannot be closed')
+      : el('form', { onSubmit: this.handleCloseTab },
         el('input', {type: 'hidden', value: this.props.invoice.tabId }),
         el('div', {className: 'form-group'},
           el('label', {htmlFor: 'amountPaid'}, 'Amount Paid'),
-          el('input', {
-            type: 'text',
-            name: 'amountPaid',
-            id: 'amountPaid',
-            className: 'form-control',
-            value: this.state.amountPaid,
-            onChange: this.handleAmountChange
-          })
+          el('div', { className: 'input-group'},
+            el('span', { className: 'input-group-addon'}, '$'),
+            el('input', {
+              type: 'number',
+              step: '0.01',
+              min: '0.00',
+              name: 'amountPaid',
+              id: 'amountPaid',
+              className: 'form-control',
+              value: this.state.amountPaid,
+              onChange: this.handleAmountChange
+            })
+          )
         ),
         el('button', {
           type: 'submit',

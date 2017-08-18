@@ -62,12 +62,18 @@ export default class OpenTabs {
   }
 
   tabIdForTable(table) {
+    if (typeof table === 'string') {
+      table = parseInt(table)
+    }
     return Array.from(this.todoByTab.values())
       .find(tab => tab.tableNumber === table)
       .id
   }
 
   tabForTable(table) {
+    if (typeof table === 'string') {
+      table = parseInt(table)
+    }
     const tab = Array.from(this.todoByTab.values()).find(t => t.tableNumber === table)
     return new TabStatus({
       tabId: tab.id,
@@ -79,10 +85,12 @@ export default class OpenTabs {
   }
 
   invoiceForTable(table) {
-    const tab = Array.from(this.todoByTab).find(t => t.tableNumber === table)
-
+    if (typeof table === 'string') {
+      table = parseInt(table)
+    }
+    const tab = Array.from(this.todoByTab.values()).find(t => t.tableNumber === table)
     return new TabInvoice({
-      taId: tab.id,
+      tabId: tab.id,
       tableNumber: tab.tableNumber,
       items: [...tab.served],
       total: tab.served.reduce((sum, item) => sum + item.price, 0),

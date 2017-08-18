@@ -6,15 +6,18 @@ export default class TabStatus extends Component {
   constructor(props) {
     super(props)
 
-    this.initialState = this.props.tab.toServe.reduce((obj, item, i) => {
+    this.handleChangeServed = this.handleChangeServed.bind(this)
+    this.handleMarkItemsServed = this.handleMarkItemsServed.bind(this)
+    this._buildState = this._buildState.bind(this)
+
+    this.state = this._buildState()
+  }
+
+  _buildState() {
+    return this.props.tab.toServe.reduce((obj, item, i) => {
       obj[`${item.menuNumber}-${i}`] = false
       return obj
     }, {})
-
-    this.state = this.initialState
-
-    this.handleChangeServed = this.handleChangeServed.bind(this)
-    this.handleMarkItemsServed = this.handleMarkItemsServed.bind(this)
   }
 
   handleChangeServed(event) {
@@ -31,7 +34,7 @@ export default class TabStatus extends Component {
       .map(menuNumberPlusIndex => menuNumberPlusIndex.split('-')[0])
       .map(menuNumbers => parseInt(menuNumbers))
     this.props.handleMarkItemsServed(this.props.tab.tabId, menuNumbers)
-    this.setState(this.initialState)
+    this.setState(this._buildState())
   }
 
   render() {

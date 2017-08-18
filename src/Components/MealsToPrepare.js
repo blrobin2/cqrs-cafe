@@ -31,6 +31,7 @@ export default class MealsToPrepare extends Component {
     const menuNumbers = Object.keys(this.state[id])
       .filter(menuNumber => this.state[id][`${menuNumber}`])
       .map(menuNumberPlusIndex => menuNumberPlusIndex.split('-')[0])
+      .map(menuNumber => parseInt(menuNumber))
     this.props.handleMarkFoodPrepared(id, menuNumbers)
   }
 

@@ -38,39 +38,43 @@ export default class OpenTab extends Component {
       el('h2', null, 'Open Tab'),
       el('form', {
           id: 'openTab',
+          className: 'form-inline',
           onSubmit: this.handleSubmit
         },
-        el('fieldset', null,
-          el('div', {className: 'form-group'},
-            el('label', {htmlFor: 'tableNumber'}, 'Table Number'),
-            el('input', {
-              type: 'number',
-              name: 'tableNumber',
-              id: 'tableNumber',
-              className: 'form-control',
-              value: this.state.tableNumber,
-              onChange: this.handleTableChange
-            }),
-          ),
-          el('div', {className: 'form-group'},
-            el('label', {htmlFor: 'waiter'}, 'Waiter/Waitress'),
-            el('select', {
-                name: 'waiter',
-                id: 'waiter',
-                className: 'form-control',
-                value: this.state.waiter,
-                onChange: this.handleWaiterChange
-              },
-              el('option', {value: 0, key: -1}, '--Select--'),
-              this.props.waitStaff.map((w, i) =>
-                el('option', {value: w, key: i}, w))
-            ),
-          ),
-          el('button', {
-              type: 'submit',
-              className: 'btn'
-            }, 'Open Tab')
-        )
+        el('label', {
+            htmlFor: 'tableNumber',
+            className: 'sr-only'
+          }, 'Table Number'),
+        el('input', {
+          type: 'number',
+          min: '0',
+          max: '8',
+          name: 'tableNumber',
+          id: 'tableNumber',
+          className: 'form-control mb-2 mr-sm-2 mb-sm-0',
+          title: 'Table Number',
+          value: this.state.tableNumber,
+          onChange: this.handleTableChange
+        }),
+        el('label', {
+            htmlFor: 'waiter',
+            className: 'sr-only',
+          }, 'Waiter/Waitress'),
+        el('select', {
+            name: 'waiter',
+            id: 'waiter',
+            className: 'form-control mb-2 mr-sm-2 mb-sm-0',
+            value: this.state.waiter,
+            onChange: this.handleWaiterChange
+          },
+          el('option', {value: 0, key: -1}, '--Select Waiter/Waitress--'),
+          this.props.waitStaff.map((w, i) =>
+            el('option', {value: w, key: i}, w))
+        ),
+        el('button', {
+            type: 'submit',
+            className: 'btn'
+          }, 'Open Tab')
       )
     )
   }
