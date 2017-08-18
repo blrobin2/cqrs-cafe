@@ -1,5 +1,5 @@
 # CQRS Cafe
-An exercise in applying [CQRS](https://martinfowler.com/bliki/CQRS.html) concepts written in C# to a JavaScript platform. The foundational code is in the `lib/` folder, and can probably be ported to it's own NPM package at some point. In addition to what was in the original library, I added a GUID generator, an Extendable Error so youand a Type Checker for class instatiation.
+An exercise in applying [CQRS](https://martinfowler.com/bliki/CQRS.html) concepts written in C# to a JavaScript platform. The foundational code is in the `lib/` folder, and can probably be ported to it's own NPM package at some point. In addition to what was in the original library, I added a GUID generator, an Extendable Error so you can use it as a base Error class, and a Type Checker for class instatiation.
 
 ## Why?
 
