@@ -1,5 +1,5 @@
 import { Component, createElement } from 'react'
-import { Link, NavLink } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 const el = createElement
 
 export default class Sidebar extends Component {
