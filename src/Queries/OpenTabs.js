@@ -153,7 +153,7 @@ export default class OpenTabs {
   }
 
   applyTabClosed(event) {
-    const tabIndex = this.todoByTab.delete(event.id)
+    this.todoByTab.delete(event.id)
   }
 
   _getTab(id) {
