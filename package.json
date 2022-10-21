@@ -20,7 +20,7 @@
     "build": "webpack -p"
   },
   "dependencies": {
-    "history": "^4.6.3",
+    "history": "^4.10.1",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "react-router": "^4.1.2",
