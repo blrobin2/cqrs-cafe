@@ -42,7 +42,7 @@ export default class TabAggregate extends Aggregate {
    * @throws {Error}
    */
   handleOpenTab(command) {
-    if (!command instanceof OpenTab) {
+    if (!(command instanceof OpenTab)) {
       throw new Error(`Invalid command: Expected OpenTab, recieved ${command.constructor.name}`)
     }
     return [new TabOpened({

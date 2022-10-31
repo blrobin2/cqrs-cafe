@@ -22,7 +22,7 @@ export default class TabStatus extends Component {
 
   handleChangeServed(event) {
     const {menuNumber, index} = event.target.dataset
-    const newState = ({}, this.state)
+    const newState = Object.assign({}, this.state)
     newState[`${menuNumber}-${index}`] = event.target.checked
     this.setState(newState)
   }

@@ -1,5 +1,5 @@
 import { Component, createElement } from 'react'
-import { Link, NavLink, Switch, Route } from 'react-router-dom'
+import { Switch, Route } from 'react-router-dom'
 const el = createElement
 import { withRouter } from 'react-router'
 
