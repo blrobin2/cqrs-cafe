@@ -10,7 +10,7 @@
     "babel-polyfill": "^6.23.0",
     "babel-preset-env": "^1.6.0",
     "chai": "^4.1.1",
-    "mocha": "^3.5.0",
+    "mocha": "^5.2.0",
     "webpack": "^3.5.3",
     "webpack-dev-server": "^2.7.1"
   },
@@ -20,9 +20,9 @@
     "build": "webpack -p"
   },
   "dependencies": {
-    "history": "^4.6.3",
-    "react": "^15.6.1",
-    "react-dom": "^15.6.1",
+    "history": "^4.10.1",
+    "react": "^16.5.0",
+    "react-dom": "^16.5.0",
     "react-router": "^4.1.2",
     "react-router-dom": "^4.3.1"
   }
